@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 코스웨어 실증 수업운영 컨설팅 (자가진단·컨설턴트 검토)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{--ink:#1b2430;--muted:#5b6673;--line:#dfe4ea;--bg:#f3f5f8;--card:#fff;--brand:#1f3864;--brand-2:#2e5aac;--accent:#e8eef9;--ok:#1e7f4f;--warn:#b25a00;--danger:#b3261e;--consult:#5b3a8c;--consult-bg:#f1ecf9}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;font-size:14px;line-height:1.55}
+button,input,select,textarea{font:inherit;color:inherit}
+header.top{position:sticky;top:0;z-index:20;background:var(--brand);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header.top h1{font-size:17px;margin:0;font-weight:700}
+header.top .sub{font-size:12px;opacity:.85}
+header.top .spacer{flex:1}
+header.top .state{font-size:12px;opacity:.9}
+.btn{border:1px solid transparent;border-radius:8px;padding:8px 14px;background:#fff;color:var(--brand);cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none}
+.btn:hover{filter:brightness(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:var(--brand-2);color:#fff}
+.btn.consult{background:var(--consult);color:#fff}
+.btn.ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.btn.small{padding:4px 10px;font-size:12px;border-radius:6px}
+.btn.outline{background:#fff;border-color:var(--line);color:var(--ink)}
+.role-tabs{display:flex;gap:8px;padding:14px 20px 0;max-width:1500px;margin:0 auto;flex-wrap:wrap}
+.role-tabs .btn{border-color:var(--line);background:#fff;color:var(--ink)}
+.role-tabs .btn.on{background:var(--brand-2);color:#fff;border-color:var(--brand-2)}
+.role-tabs .btn.on.c{background:var(--consult);border-color:var(--consult)}
+main{padding:14px 20px 40px;max-width:1500px;margin:0 auto}
+.pane{display:none}.pane.active{display:block}
+.two{display:grid;grid-template-columns:minmax(380px,560px) 1fr;gap:20px}
+@media (max-width:1000px){.two{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card.c{border-color:#d9cdef;background:#fdfbff}
+.card h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.card h2 .num{background:var(--brand);color:#fff;border-radius:999px;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:12px}
+.card.c h2 .num{background:var(--consult)}
+.card .hint{font-size:12px;color:var(--muted);margin:-4px 0 10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid .full{grid-column:1/-1}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+label.f>input,label.f>select,label.f>textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;color:var(--ink);background:#fff;width:100%}
+label.f>textarea{min-height:64px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid #b9cdf3;border-color:var(--brand-2)}
+select#track:invalid{border-color:var(--danger);background:#fff7f6}
+.area{margin:12px 0 4px;font-weight:700;color:var(--brand);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.area .avg{font-weight:500;color:var(--muted);font-size:12px}
+.item{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid var(--line)}
+.item .q{font-size:13px}
+.item .q small{display:block;color:var(--muted);font-size:11.5px}
+.scale{display:flex;gap:4px}
+.scale label{display:flex;flex-direction:column;align-items:center;font-size:10.5px;color:var(--muted);cursor:pointer}
+.scale input{margin:0 0 2px}
+.item textarea{grid-column:1/-1;width:100%;min-height:36px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:12.5px;resize:vertical;background:#fafbfc}
+.weeks{display:grid;grid-template-columns:repeat(15,1fr);gap:4px}
+.weeks label{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--muted);background:#fafbfc;border:1px solid var(--line);border-radius:6px;padding:4px 0;cursor:pointer}
+.weeks input{margin:2px 0}
+.weeks label.on{background:var(--accent);color:var(--brand);border-color:#b9cdf3}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.status{font-size:12px;color:var(--muted);min-height:16px}
+.status.err{color:var(--danger)}.status.ok{color:var(--ok)}
+.ai-box{background:var(--accent);border:1px dashed #b9cdf3;border-radius:10px;padding:10px 12px;margin-top:10px}
+.card.c .ai-box{background:var(--consult-bg);border-color:#cbb8ea}
+.code-box{background:#fff;border:2px solid var(--brand-2);border-radius:10px;padding:10px 14px;font-size:15px;display:inline-flex;gap:10px;align-items:center}
+.code-box b{font-size:22px;letter-spacing:3px;color:var(--brand)}
+table.iv{width:100%;border-collapse:collapse;font-size:12.5px}
+table.iv th,table.iv td{border-bottom:1px solid var(--line);padding:4px 3px;text-align:center;vertical-align:middle}
+table.iv th{font-weight:500;color:var(--muted);font-size:11.5px}
+table.iv td.n{text-align:left}
+table.iv input[type=text]{width:100%;border:1px solid transparent;border-radius:6px;padding:5px 6px;background:#fafbfc;font-size:12.5px}
+table.iv input[type=text]:hover{border-color:var(--line)}
+table.iv select{border:1px solid var(--line);border-radius:6px;padding:3px;background:#fff;font-size:12px}
+table.iv td.t{font-weight:700;color:var(--brand)}
+.cause{display:grid;grid-template-columns:90px 1fr 1fr;gap:6px;align-items:stretch}
+.cause .h{font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;background:#fafbfc;border:1px solid var(--line);border-radius:6px}
+.cause textarea{width:100%;min-height:64px;border:1px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12.5px;resize:vertical}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.toolbar .spacer{flex:1}
+.paper-wrap{overflow:auto}
+.paper{background:#fff;width:794px;max-width:100%;margin:0 auto;padding:48px 52px;border:1px solid var(--line);box-shadow:0 2px 12px rgba(0,0,0,.06);font-size:12.5px;line-height:1.6;color:#111}
+.paper.export{width:210mm;max-width:none;margin:0;padding:0 15mm;border:0;box-shadow:none}
+.paper.export .keep{page-break-inside:avoid;break-inside:avoid}
+.paper .doc-tag{text-align:center;font-size:11px;color:#555;margin-bottom:4px}
+.paper h1{text-align:center;font-size:21px;margin:0 0 2px;color:var(--brand)}
+.paper .doc-sub{text-align:center;font-size:13px;color:#333;margin-bottom:16px}
+.paper table{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:11.5px;table-layout:fixed}
+.paper table th,.paper table td{border:1px solid #9aa4b1;padding:5px 7px;vertical-align:top;word-break:break-word}
+.paper table th{background:#e9eef7;font-weight:500;text-align:center}
+.paper table td.k{background:#f4f6f9;font-weight:500}
+.paper table td.c{text-align:center}
+.paper h2{font-size:14px;color:var(--brand);margin:18px 0 6px;padding-bottom:3px;border-bottom:2px solid var(--brand)}
+.paper h2.c{color:var(--consult);border-color:var(--consult)}
+.paper h3{font-size:12.5px;margin:12px 0 4px;color:#333}
+.paper .sec{white-space:pre-wrap;min-height:22px;border-radius:4px;padding:2px 4px}
+.paper .sec:focus{outline:2px solid #b9cdf3;background:#fbfcff}
+.paper .sec.empty::before{content:"(미작성)";color:#9aa4b1}
+.paper .sign{margin-top:26px;display:flex;justify-content:space-between;font-size:12px}
+.paper .foot{margin-top:22px;font-size:10.5px;color:#666;text-align:center}
+.paper .bar{display:inline-block;height:9px;background:var(--brand-2);border-radius:3px;vertical-align:middle}
+.badge{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--accent);color:var(--brand)}
+.badge.c{background:var(--consult-bg);color:var(--consult)}
+.modal-bg{position:fixed;inset:0;background:rgba(20,28,40,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:12px;padding:20px;max-width:520px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.modal h3{margin:0 0 8px;font-size:16px}
+.modal textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:8px;padding:8px}
+.modal .row{justify-content:flex-end;margin-top:12px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1b2430;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;z-index:60;pointer-events:none}
+.toast.show{opacity:1}
+.generate .btn{width:100%;justify-content:center;padding:12px;font-size:15px}
+.lock{opacity:.6;pointer-events:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>AI 코스웨어 실증 수업운영 컨설팅</h1>
+    <div class="sub">교수자 자가진단 → 컨설턴트 검토 → 개선안 합의. AI가 문장 작성과 분석 초안을 도와드립니다</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="state" id="saveState">입력 내용은 이 브라우저에 자동 저장됩니다</div>
+  <button class="btn ghost small" id="btnSettings">AI 설정</button>
+  <button class="btn ghost small" id="btnReset">입력 초기화</button>
+</header>
+
+<div class="role-tabs">
+  <button class="btn on" data-pane="prof">1. 교수자 자가진단</button>
+  <button class="btn" data-pane="consult">2. 컨설턴트 검토</button>
+  <button class="btn" data-pane="preview">3. 컨설팅 결과서 미리보기·저장</button>
+</div>
+
+<main>
+<!-- ================= 교수자 자가진단 ================= -->
+<section class="pane active" id="pane-prof">
+  <div class="two">
+  <div>
+  <div class="card">
+    <h2><span class="num">1</span>기본 정보</h2>
+    <div class="grid">
+      <label class="f">교과목명<input id="course" placeholder="예: C프로그래밍"></label>
+      <label class="f">담당 교수<input id="prof" placeholder="성명"></label>
+      <label class="f">대학·소속<input id="dept" placeholder="예: 한림대학교 소프트웨어학부"></label>
+      <label class="f">실증 Track <span style="color:var(--danger)">(필수)</span>
+        <select id="track" required>
+          <option value="">선택(필수)</option>
+          <option>Track 1 신규 개발</option>
+          <option>Track 2 신규 심화</option>
+          <option>Track 2 기개발 심화</option>
+          <option>기타 에듀테크</option>
+        </select></label>
+      <label class="f">AI 코스웨어명<input id="cw" placeholder="예: 코스모스, 풀리캠퍼스"></label>
+      <label class="f">공급 기업<input id="vendor" placeholder="예: 유비온, 프리윌린"></label>
+      <label class="f">수강 인원(명)<input id="n" type="number" min="0" placeholder="예: 42"></label>
+      <label class="f">현재 진행 주차<input id="nowWeek" type="number" min="1" max="15" placeholder="예: 8"></label>
+      <label class="f">컨설팅 회차
+        <select id="round"><option>1차(수업 설계 컨설팅 후 운영 점검)</option><option>2차(학기 중반 운영 컨설팅)</option><option>3차(학기 말 결과 점검)</option></select></label>
+      <label class="f">연락처(이메일 또는 전화)<input id="contact" placeholder="컨설턴트가 연락드릴 때 사용"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span>수업 운영 자가진단 <span class="badge" id="avgBadge">평균 -</span></h2>
+    <div class="hint">현재 운영 상태를 솔직하게 표시해 주세요(1 전혀 그렇지 않다 ~ 5 매우 그렇다). 각 항목 아래 칸에는 근거나 현황을 한 줄로 적으시면 컨설턴트가 상황을 정확히 파악할 수 있습니다.</div>
+    <div id="checklist"></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>지금까지의 코스웨어 활용 주차 <span class="badge" id="weekBadge">활용 0주</span></h2>
+    <div class="hint">코스웨어를 실제로 활용한 주차를 눌러 표시해 주세요(현재 주차까지). 기준: Track 1·2는 학기 중 8주 이상, 기타 에듀테크는 3~5주 이상.</div>
+    <div class="weeks" id="weeks"></div>
+    <label class="f" style="margin-top:8px">운영 현황 메모(활용 방식, 미활용 주차 사유 등)<textarea id="weekMemo" placeholder="예: 매주 강의 후 20분 연습, 8주차는 중간고사로 미활용, 대시보드는 격주 확인"></textarea></label>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span>어려움과 컨설팅 요청</h2>
+    <div class="grid">
+      <label class="f full">운영하면서 어려운 점(학생 반응, 기능, 시간, 평가 등 무엇이든)<textarea id="difficulty" placeholder="예: 상위권 학생이 문항을 쉽다고 느껴 참여가 떨어짐, 대시보드를 어떻게 활용해야 할지 모르겠음"></textarea></label>
+      <label class="f full">컨설턴트에게 특히 검토받고 싶은 내용<textarea id="want" placeholder="예: 수준별 문항 배치가 적절한지, 성적 반영 비율을 높여도 되는지"></textarea></label>
+      <label class="f full">잘 되고 있다고 느끼는 점<textarea id="good" placeholder="예: 즉시 피드백 덕분에 질문이 줄었음"></textarea></label>
+    </div>
+    <div class="ai-box">
+      <div class="row" style="justify-content:space-between">
+        <strong style="font-size:13px">AI 도움: 자가진단 요약 문장 만들기</strong>
+        <button class="btn small outline" id="btnProfAI">요약 초안 생성</button>
+      </div>
+      <div class="hint" style="margin:6px 0">위 체크와 메모를 바탕으로 「지향하는 수업」「현재 수업」「컨설팅 요청 과제」 세 단락을 보고서 문체로 정리해 드립니다. 생성 후 직접 고치실 수 있습니다.</div>
+      <label class="f">지향하는 수업(Should)<textarea id="pShould" placeholder="AI 초안 생성 또는 직접 작성"></textarea></label>
+      <label class="f" style="margin-top:6px">현재 수업(Is)<textarea id="pIs" placeholder="AI 초안 생성 또는 직접 작성"></textarea></label>
+      <label class="f" style="margin-top:6px">컨설팅 요청 과제(1~2개)<textarea id="pRequest" placeholder="예: 학기 후반 적응형 퀴즈의 성적 반영 비율과 문항 난이도 배치 개선"></textarea></label>
+      <div class="status" id="profAIStatus"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">5</span>컨설팅 요청 제출</h2>
+    <div class="hint">제출하면 자가진단이 사업단에 전달되고 접수 코드가 발급됩니다. 컨설턴트는 이 코드로 내용을 불러와 검토합니다. 수정 후 다시 제출하면 같은 코드로 갱신됩니다.</div>
+    <div class="generate"><button class="btn primary" id="btnSubmitReq">컨설팅 요청 제출(자가진단 전송)</button></div>
+    <div class="status" id="reqStatus" style="margin-top:6px"></div>
+    <div id="codeArea" style="margin-top:10px;display:none">
+      <div class="code-box">접수 코드 <b id="codeText"></b> <button class="btn small outline" id="btnCopyCode">복사</button></div>
+      <div class="hint" style="margin-top:6px">이 코드를 사업단·컨설턴트에게 알려 주세요. 컨설팅 결과가 등록되면 「컨설턴트 검토」 탭에서 같은 코드로 결과를 확인할 수 있습니다.</div>
+    </div>
+  </div>
+  </div>
+  <div>
+    <div class="card" style="position:sticky;top:70px">
+      <h2>자가진단 현황</h2>
+      <div id="profSummary" style="font-size:13px"></div>
+      <div class="hint" style="margin-top:10px">영역별 평균은 컨설턴트 검토와 결과서에 그대로 표시됩니다.</div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ================= 컨설턴트 검토 ================= -->
+<section class="pane" id="pane-consult">
+  <div class="card c">
+    <h2><span class="num">C</span>교수자 자가진단 불러오기</h2>
+    <div class="row">
+      <input id="loadCode" placeholder="접수 코드 6자리" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:160px;text-transform:uppercase;letter-spacing:2px">
+      <button class="btn consult" id="btnLoad">불러오기</button>
+      <span class="status" id="loadStatus"></span>
+    </div>
+    <div class="hint" style="margin-top:8px">접수 코드가 없고 같은 컴퓨터에서 교수자 탭을 작성했다면, 그 내용이 그대로 사용됩니다. 불러온 교수자 내용은 아래 미리보기·결과서에 함께 표시됩니다.</div>
+    <div id="loadedInfo" style="font-size:13px;margin-top:6px"></div>
+  </div>
+
+  <div class="two">
+  <div>
+  <div class="card c">
+    <h2><span class="num">6</span>컨설턴트 정보</h2>
+    <div class="grid">
+      <label class="f">컨설턴트 성명<input id="cName" placeholder="성명"></label>
+      <label class="f">소속·직위<input id="cAffil" placeholder="예: ○○대학교 교육혁신원 교수"></label>
+      <label class="f">컨설팅 일자<input id="cDate" type="date"></label>
+      <label class="f">컨설팅 방식<select id="cMode"><option>대면</option><option>온라인(화상)</option><option>서면</option><option>대면+서면</option></select></label>
+    </div>
+  </div>
+
+  <div class="card c">
+    <h2><span class="num">7</span>자가진단 검토(영역별 컨설턴트 평정)</h2>
+    <div class="hint">교수자 자가진단 점수와 근거를 보고 영역별로 컨설턴트 평정(1~5)과 의견을 적어 주세요. 자가진단과 평정 차이가 큰 영역이 컨설팅의 초점이 됩니다.</div>
+    <div id="review"></div>
+  </div>
+
+  <div class="card c">
+    <h2><span class="num">8</span>수업 분석(지향 vs 현재 vs 격차)</h2>
+    <div class="ai-box">
+      <div class="row" style="justify-content:space-between">
+        <strong style="font-size:13px">AI 도움: 분석·개선안 초안 한 번에 생성</strong>
+        <button class="btn small consult" id="btnConsultAI">초안 생성</button>
+      </div>
+      <div class="hint" style="margin:6px 0">교수자 자가진단과 위 평정을 바탕으로 8~11번 항목의 초안을 작성합니다. 컨설턴트가 검토·수정하는 것을 전제로 한 초안입니다.</div>
+      <div class="status" id="consultAIStatus"></div>
+    </div>
+    <label class="f" style="margin-top:8px">지향하는 수업(Should)<textarea id="cShould"></textarea></label>
+    <label class="f" style="margin-top:6px">현재 수업(Is)<textarea id="cIs"></textarea></label>
+    <label class="f" style="margin-top:6px">격차(Gap)와 수업 문제 규정<textarea id="cGap"></textarea></label>
+  </div>
+
+  <div class="card c">
+    <h2><span class="num">9</span>원인 분석(영역 × 주체)</h2>
+    <div class="hint">수행공학 수업컨설팅 모형의 세 영역(지식·기술 / 동기 / 교육여건)별로 교수자와 학습자 측 근본 원인을 적어 주세요. 해당 없으면 비워 두셔도 됩니다.</div>
+    <div class="cause">
+      <div class="h">영역</div><div class="h">교수자</div><div class="h">학습자</div>
+      <div class="h">지식·기술</div><textarea id="c_tk" placeholder="예: 대시보드 지표 해석 방법을 모름"></textarea><textarea id="c_sk" placeholder="예: 오답 피드백을 읽고 재풀이하는 방법을 모름"></textarea>
+      <div class="h">동기</div><textarea id="c_tm" placeholder="예: 성적 반영 비율이 낮아 운영 우선순위가 밀림"></textarea><textarea id="c_sm" placeholder="예: 성적 반영이 적어 연습을 건너뜀"></textarea>
+      <div class="h">교육여건</div><textarea id="c_te" placeholder="예: 강의실 네트워크 불안정, 조교 부재"></textarea><textarea id="c_se" placeholder="예: 개인 기기 미보유 학생 존재"></textarea>
+    </div>
+  </div>
+
+  <div class="card c">
+    <h2><span class="num">10</span>개선안 설계</h2>
+    <div class="grid">
+      <label class="f">개선안 목표(교수자)<textarea id="gT"></textarea></label>
+      <label class="f">개선안 목표(학습자)<textarea id="gS"></textarea></label>
+    </div>
+    <div class="hint" style="margin-top:10px">개입안을 적고 다섯 준거(수용성·타당성·윤리성·효과성과 효율성·실현가능성)를 5점 만점으로 평가하면 총점이 자동 계산됩니다(Takahashi, 2007 준거).</div>
+    <table class="iv">
+      <thead><tr><th style="width:36%">개입안</th><th>수용성</th><th>타당성</th><th>윤리성</th><th>효과성·효율성</th><th>실현가능성</th><th>총점</th><th></th></tr></thead>
+      <tbody id="ivBody"></tbody>
+    </table>
+    <div class="row" style="margin-top:6px"><button class="btn small outline" id="btnAddIv">개입안 추가</button></div>
+    <label class="f" style="margin-top:10px">최종 개선안과 남은 주차 실행 계획<textarea id="finalPlan" placeholder="총점이 높은 개입안을 중심으로, 몇 주차에 무엇을 어떻게 적용할지"></textarea></label>
+  </div>
+
+  <div class="card c">
+    <h2><span class="num">11</span>종합 의견 및 후속 조치</h2>
+    <label class="f">종합 의견(강점, 보완점, 격려)<textarea id="overall"></textarea></label>
+    <label class="f" style="margin-top:6px">후속 조치(사업단·기업 지원 요청, 결과보고서 작성 시 반영 사항, 다음 컨설팅 일정)<textarea id="followup"></textarea></label>
+  </div>
+
+  <div class="card c">
+    <h2><span class="num">12</span>컨설팅 결과 제출</h2>
+    <div class="hint">결과서 PDF·DOCX가 사업단 드라이브에 저장되고, 교수자는 접수 코드로 결과를 확인할 수 있습니다.</div>
+    <div class="generate"><button class="btn consult" id="btnSubmitRes">컨설팅 결과 제출</button></div>
+    <div class="status" id="resStatus" style="margin-top:6px"></div>
+  </div>
+  </div>
+  <div>
+    <div class="card" style="position:sticky;top:70px">
+      <h2>교수자 자가진단 요약 <span class="badge" id="loadedCodeBadge"></span></h2>
+      <div id="consultSummary" style="font-size:13px"></div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ================= 미리보기 ================= -->
+<section class="pane" id="pane-preview">
+  <div class="toolbar">
+    <span style="font-size:13px;color:var(--muted)">본문 서술 칸은 클릭해서 직접 수정할 수 있습니다(수정 내용은 입력 탭에도 반영됨)</span>
+    <div class="spacer"></div>
+    <button class="btn outline" id="btnCopy">텍스트 복사</button>
+    <button class="btn outline" id="btnDocx">DOCX 저장</button>
+    <button class="btn primary" id="btnPdf">PDF 저장</button>
+  </div>
+  <div class="status" id="exportStatus" style="margin:-4px 0 8px"></div>
+  <div class="paper-wrap">
+  <article class="paper" id="paper">
+    <div class="doc-tag">고등교육 에듀테크 소프트랩 실증</div>
+    <h1>AI 코스웨어 실증 수업운영 컨설팅 결과서</h1>
+    <div class="doc-sub">(교수자 자가진단 및 컨설턴트 검토)</div>
+    <table id="infoTable">
+      <colgroup><col style="width:18%"><col style="width:32%"><col style="width:18%"><col style="width:32%"></colgroup>
+      <tr><td class="k">교과목명</td><td data-f="course"></td><td class="k">담당 교수</td><td data-f="prof"></td></tr>
+      <tr><td class="k">대학·소속</td><td data-f="dept"></td><td class="k">실증 Track</td><td data-f="track"></td></tr>
+      <tr><td class="k">AI 코스웨어</td><td data-f="cw"></td><td class="k">공급 기업</td><td data-f="vendor"></td></tr>
+      <tr><td class="k">수강 인원</td><td data-f="n_fmt"></td><td class="k">진행 주차 / 활용 주차</td><td data-f="weeks_fmt"></td></tr>
+      <tr><td class="k">컨설팅 회차</td><td data-f="round"></td><td class="k">접수 코드</td><td data-f="code"></td></tr>
+      <tr><td class="k">컨설턴트</td><td data-f="consultant"></td><td class="k">컨설팅 일자·방식</td><td data-f="cdate"></td></tr>
+    </table>
+
+    <h2>Ⅰ. 교수자 자가진단 결과</h2>
+    <div id="pvChecklist"></div>
+    <h3>코스웨어 활용 주차 현황</h3>
+    <div id="pvWeeks"></div>
+    <div class="sec" data-bind="weekMemo" contenteditable="true"></div>
+    <h3>교수자가 본 지향하는 수업(Should)</h3><div class="sec" data-bind="pShould" contenteditable="true"></div>
+    <h3>교수자가 본 현재 수업(Is)</h3><div class="sec" data-bind="pIs" contenteditable="true"></div>
+    <h3>운영상 어려움</h3><div class="sec" data-bind="difficulty" contenteditable="true"></div>
+    <h3>컨설팅 요청 과제</h3><div class="sec" data-bind="pRequest" contenteditable="true"></div>
+
+    <h2 class="c">Ⅱ. 컨설턴트 검토</h2>
+    <h3>영역별 자가진단·컨설턴트 평정 비교</h3>
+    <div id="pvReview"></div>
+    <h3>수업 분석</h3>
+    <table><colgroup><col style="width:14%"><col></colgroup>
+      <tr><td class="k">지향하는 수업</td><td><div class="sec" data-bind="cShould" contenteditable="true"></div></td></tr>
+      <tr><td class="k">현재 수업</td><td><div class="sec" data-bind="cIs" contenteditable="true"></div></td></tr>
+      <tr><td class="k">격차·수업 문제</td><td><div class="sec" data-bind="cGap" contenteditable="true"></div></td></tr>
+    </table>
+    <h3>원인 분석</h3>
+    <table><colgroup><col style="width:14%"><col style="width:43%"><col style="width:43%"></colgroup>
+      <tr><th>영역</th><th>교수자</th><th>학습자</th></tr>
+      <tr><td class="k">지식·기술</td><td><div class="sec" data-bind="c_tk" contenteditable="true"></div></td><td><div class="sec" data-bind="c_sk" contenteditable="true"></div></td></tr>
+      <tr><td class="k">동기</td><td><div class="sec" data-bind="c_tm" contenteditable="true"></div></td><td><div class="sec" data-bind="c_sm" contenteditable="true"></div></td></tr>
+      <tr><td class="k">교육여건</td><td><div class="sec" data-bind="c_te" contenteditable="true"></div></td><td><div class="sec" data-bind="c_se" contenteditable="true"></div></td></tr>
+    </table>
+    <h3>개선안 목표</h3>
+    <table><colgroup><col style="width:14%"><col></colgroup>
+      <tr><td class="k">교수자</td><td><div class="sec" data-bind="gT" contenteditable="true"></div></td></tr>
+      <tr><td class="k">학습자</td><td><div class="sec" data-bind="gS" contenteditable="true"></div></td></tr>
+    </table>
+    <h3>개입안 평가</h3>
+    <div id="pvIv"></div>
+    <h3>최종 개선안 및 실행 계획</h3><div class="sec" data-bind="finalPlan" contenteditable="true"></div>
+    <h3>종합 의견</h3><div class="sec" data-bind="overall" contenteditable="true"></div>
+    <h3>후속 조치</h3><div class="sec" data-bind="followup" contenteditable="true"></div>
+
+    <div class="sign"><span>교수자: <u>　<span data-f="prof"></span>　</u> (서명)</span><span>컨설턴트: <u>　<span data-f="consultant"></span>　</u> (서명)</span><span>작성일: <span id="signDate"></span></span></div>
+    <div class="foot">한림대학교 에듀테크소프트랩사업단</div>
+  </article>
+  </div>
+</section>
+</main>
+
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <h3>AI 설정</h3>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:10px">사업단 AI 서버가 기본 연결되어 있어 보통은 설정이 필요 없습니다. 개인 Anthropic API 키를 쓰시려면 아래에 입력해 주세요(이 브라우저에만 저장).</div>
+    <label class="f" style="margin-bottom:8px">AI 중계 서버 주소<input id="setProxy" placeholder="https://....workers.dev"></label>
+    <label class="f" style="margin-bottom:8px">또는 Anthropic API 키(개인용)<input id="setKey" type="password" placeholder="sk-ant-..."></label>
+    <label class="f" style="margin-bottom:8px">모델(API 키 사용 시에만 적용)<select id="setModel"><option value="claude-sonnet-5-5">claude-sonnet-5-5 (권장)</option><option value="claude-haiku-5-5">claude-haiku-5-5 (빠름)</option><option value="claude-opus-5-5">claude-opus-5-5 (정밀)</option></select></label>
+    <div class="status" id="setStatus"></div>
+    <div class="row"><button class="btn outline" id="setCancel">닫기</button><button class="btn primary" id="setSave">저장</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const STORE="softlab-consult-v2";
+const DEFAULT_RELAY="https://lively-haze-872f.yueun88.workers.dev";
+// 수업운영 컨설팅 전용 수신기(Apps Script 웹 앱) 주소. 비어 있으면 제출·불러오기 버튼이 안내만 표시함.
+const UPLOAD_URL="https://script.google.com/macros/s/AKfycbzqub_EiPVL9XxaT_r1VNJjhd4bFQYVJcHVCMJqrHA2xXw0CGIpg-xxGGdI0X8E2zF6VA/exec";
+
+/* ---------- 자가진단 문항 ---------- */
+const AREAS=[
+ {k:"A",name:"수업 설계와 목표",items:[
+   {k:"a1",q:"해결하려는 교육적 문제와 수업 목표가 명확히 설정되어 있음",s:"예: 선수 수준 편차 해소, 과제 미제출 감소 등"},
+   {k:"a2",q:"AI 코스웨어 선정 사유가 교과 내용·학습자 특성과 연결되어 있음",s:"어떤 기능이 어떤 문제를 해결하는지 설명 가능"}]},
+ {k:"B",name:"4단계 적응형 학습 운영",items:[
+   {k:"b1",q:"사전(수준) 진단을 실시하고 결과를 수업에 반영함",s:"진단 주차, 결과 활용 방식"},
+   {k:"b2",q:"진단 결과에 따라 맞춤형 학습(수준별 문항·콘텐츠)을 제공함",s:"수준 구분 방식, 제공 빈도"},
+   {k:"b3",q:"학생 개별 피드백이 적시에 제공되고 있음",s:"AI 피드백·교수 피드백의 시점과 방식"},
+   {k:"b4",q:"사후(수준) 진단 계획이 구체적으로 수립되어 있음",s:"예정 주차, 도구, 사전 진단과의 비교 계획"}]},
+ {k:"C",name:"코스웨어 활용 충실도",items:[
+   {k:"c1",q:"계획한 주차 기준에 맞게 코스웨어를 꾸준히 활용하고 있음",s:"Track 1·2 8주 이상, 기타 3~5주 이상"},
+   {k:"c2",q:"수업 중 활용과 수업 외 활용(과제·자율학습)이 연계되어 있음",s:"수업 전·중·후 역할 구분"},
+   {k:"c3",q:"코스웨어 활동이 성적 평가에 반영되어 학생 참여 유인이 있음",s:"반영 비율, 반영 방식"}]},
+ {k:"D",name:"학습자 참여와 데이터 활용",items:[
+   {k:"d1",q:"학생 참여율을 대시보드 등으로 주기적으로 확인하고 있음",s:"확인 빈도, 최근 참여율"},
+   {k:"d2",q:"저활용·저성취 학생을 식별하고 대응(면담·보충)하고 있음",s:"식별 인원, 대응 방법"},
+   {k:"d3",q:"학생 반응과 어려움을 수집하여 수업 운영에 반영하고 있음",s:"설문·질문·관찰 등"}]},
+ {k:"E",name:"기업·사업단 협력",items:[
+   {k:"e1",q:"오류·기능 개선 요청을 기업에 전달하고 회신을 관리하고 있음",s:"전달 건수, 회신·반영 여부"},
+   {k:"e2",q:"사업단 모니터링·설계 컨설팅 의견을 운영에 반영하고 있음",s:"반영한 사항"}]}
+];
+const ITEMS=AREAS.flatMap(a=>a.items.map(i=>Object.assign({area:a.k},i)));
+const IV_CRIT=["acc","val","eth","eff","fea"];
+
+/* ---------- 상태 ---------- */
+const PROF_FIELDS=["course","prof","dept","track","cw","vendor","n","nowWeek","round","contact","weekMemo","difficulty","want","good","pShould","pIs","pRequest"];
+const CON_FIELDS=["cName","cAffil","cDate","cMode","cShould","cIs","cGap","c_tk","c_sk","c_tm","c_sm","c_te","c_se","gT","gS","finalPlan","overall","followup"];
+const state={code:"",prof:{f:{},checks:{},weeks:Array(15).fill(false)},con:{f:{},review:{},iv:[]}};
+let sample=null, downloads=null, inClaude=false;
+let aiCfg={proxy:"",key:"",model:"claude-sonnet-5-5"};
+
+/* ---------- 빌드 ---------- */
+function buildChecklist(){
+  const host=$("#checklist"); host.innerHTML="";
+  AREAS.forEach(a=>{
+    const h=document.createElement("div"); h.className="area"; h.innerHTML=`<span>${a.k}. ${a.name}</span><span class="avg" data-avg="${a.k}">평균 -</span>`; host.appendChild(h);
+    a.items.forEach(it=>{
+      const d=document.createElement("div"); d.className="item";
+      d.innerHTML=`<div class="q">${it.q}<small>${it.s}</small></div><div class="scale">${[1,2,3,4,5].map(v=>`<label><input type="radio" name="s_${it.k}" value="${v}">${v}</label>`).join("")}</div><textarea data-memo="${it.k}" placeholder="근거·현황 한 줄"></textarea>`;
+      host.appendChild(d);
+    });
+  });
+  const w=$("#weeks"); w.innerHTML="";
+  for(let i=1;i<=15;i++){const l=document.createElement("label");l.innerHTML=`${i}주<input type="checkbox" data-week="${i-1}">`;w.appendChild(l);}
+  const r=$("#review"); r.innerHTML="";
+  AREAS.forEach(a=>{
+    const d=document.createElement("div"); d.className="item";
+    d.innerHTML=`<div class="q">${a.k}. ${a.name}<small>교수자 자가진단 평균: <b data-pavg="${a.k}">-</b></small></div><div class="scale">${[1,2,3,4,5].map(v=>`<label><input type="radio" name="r_${a.k}" value="${v}">${v}</label>`).join("")}</div><textarea data-rc="${a.k}" placeholder="컨설턴트 의견(관찰·확인 사항, 보완 방향)"></textarea>`;
+    r.appendChild(d);
+  });
+  renderIv();
+}
+function renderIv(){
+  const tb=$("#ivBody"); tb.innerHTML="";
+  if(!state.con.iv.length)state.con.iv=[{name:"",acc:"",val:"",eth:"",eff:"",fea:""},{name:"",acc:"",val:"",eth:"",eff:"",fea:""},{name:"",acc:"",val:"",eth:"",eff:"",fea:""}];
+  state.con.iv.forEach((iv,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td class="n"><input type="text" data-iv="${i}" data-k="name" value="${esc(iv.name)}" placeholder="개입안 ${i+1}"></td>`+
+      IV_CRIT.map(c=>`<td><select data-iv="${i}" data-k="${c}"><option value="">-</option>${[1,2,3,4,5].map(v=>`<option ${String(iv[c])===String(v)?"selected":""}>${v}</option>`).join("")}</select></td>`).join("")+
+      `<td class="t">${ivTotal(iv)||""}</td><td><button class="btn small outline" data-del="${i}" title="삭제">×</button></td>`;
+    tb.appendChild(tr);
+  });
+}
+const ivTotal=iv=>IV_CRIT.reduce((s,c)=>s+(+iv[c]||0),0);
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------- 수집/반영/저장 ---------- */
+function collect(){
+  PROF_FIELDS.forEach(id=>state.prof.f[id]=$("#"+id).value);
+  ITEMS.forEach(it=>{const r=$(`input[name=s_${it.k}]:checked`);state.prof.checks[it.k]={score:r?+r.value:0,memo:$(`[data-memo=${it.k}]`).value};});
+  $$("#weeks input").forEach(c=>state.prof.weeks[+c.dataset.week]=c.checked);
+  CON_FIELDS.forEach(id=>state.con.f[id]=$("#"+id).value);
+  AREAS.forEach(a=>{const r=$(`input[name=r_${a.k}]:checked`);state.con.review[a.k]={score:r?+r.value:0,comment:$(`[data-rc=${a.k}]`).value};});
+  $$("#ivBody [data-iv]").forEach(el=>{state.con.iv[+el.dataset.iv][el.dataset.k]=el.value;});
+}
+function apply(){
+  PROF_FIELDS.forEach(id=>{if(state.prof.f[id]!=null)$("#"+id).value=state.prof.f[id];});
+  ITEMS.forEach(it=>{const c=state.prof.checks[it.k]||{};const r=$(`input[name=s_${it.k}][value="${c.score}"]`);$$(`input[name=s_${it.k}]`).forEach(x=>x.checked=false);if(r)r.checked=true;$(`[data-memo=${it.k}]`).value=c.memo||"";});
+  $$("#weeks input").forEach(c=>{c.checked=!!state.prof.weeks[+c.dataset.week];c.parentElement.classList.toggle("on",c.checked);});
+  CON_FIELDS.forEach(id=>{if(state.con.f[id]!=null)$("#"+id).value=state.con.f[id];});
+  AREAS.forEach(a=>{const c=state.con.review[a.k]||{};$$(`input[name=r_${a.k}]`).forEach(x=>x.checked=false);const r=$(`input[name=r_${a.k}][value="${c.score}"]`);if(r)r.checked=true;$(`[data-rc=${a.k}]`).value=c.comment||"";});
+  renderIv();
+  if(state.code){$("#codeArea").style.display="";$("#codeText").textContent=state.code;$("#loadCode").value=state.code;}
+}
+function save(){
+  collect();
+  try{localStorage.setItem(STORE,JSON.stringify(state));$("#saveState").textContent="자동 저장되었습니다 "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});}catch(e){$("#saveState").textContent="이 브라우저에서는 자동 저장이 되지 않습니다";}
+  render();
+}
+function load(){try{const raw=localStorage.getItem(STORE);if(raw){const s=JSON.parse(raw);state.code=s.code||"";Object.assign(state.prof,s.prof||{});Object.assign(state.con,s.con||{});if(!Array.isArray(state.prof.weeks)||state.prof.weeks.length!==15)state.prof.weeks=Array(15).fill(false);}}catch(e){}}
+
+/* ---------- 계산 ---------- */
+function areaAvg(k){const vals=AREAS.find(a=>a.k===k).items.map(i=>(state.prof.checks[i.k]||{}).score||0).filter(v=>v>0);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;}
+function totalAvg(){const vals=ITEMS.map(i=>(state.prof.checks[i.k]||{}).score||0).filter(v=>v>0);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;}
+const weekCount=()=>state.prof.weeks.filter(Boolean).length;
+const fmt1=v=>v?v.toFixed(1):"-";
+const SCALE_TXT={1:"전혀 그렇지 않다",2:"그렇지 않다",3:"보통",4:"그렇다",5:"매우 그렇다"};
+
+/* ---------- 렌더 ---------- */
+function render(){
+  const f=state.prof.f, c=state.con.f;
+  AREAS.forEach(a=>{const v=areaAvg(a.k);$(`[data-avg=${a.k}]`).textContent="평균 "+fmt1(v);$(`[data-pavg=${a.k}]`).textContent=fmt1(v);});
+  $("#avgBadge").textContent="평균 "+fmt1(totalAvg());
+  $("#weekBadge").textContent=`활용 ${weekCount()}주`;
+  $$("#weeks input").forEach(cb=>cb.parentElement.classList.toggle("on",cb.checked));
+  $$("#ivBody tr").forEach((tr,i)=>{tr.querySelector("td.t").textContent=ivTotal(state.con.iv[i])||"";});
+  const sum=AREAS.map(a=>{const v=areaAvg(a.k);return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:150px">${a.k}. ${a.name}</span><span class="bar" style="width:${Math.round(v/5*120)}px"></span><span>${fmt1(v)}</span></div>`;}).join("");
+  $("#profSummary").innerHTML=`<div>전체 평균 <b>${fmt1(totalAvg())}</b> / 활용 주차 <b>${weekCount()}주</b>${f.nowWeek?` (현재 ${f.nowWeek}주차)`:""}</div>${sum}<div style="margin-top:6px;color:var(--muted);font-size:12px">${state.code?"접수 코드 "+state.code:"아직 제출 전"}</div>`;
+  $("#consultSummary").innerHTML=`<div><b>${esc(f.course)||"(교과목 미입력)"}</b> · ${esc(f.prof)||""} · ${esc(f.track)||""}</div><div style="color:var(--muted);font-size:12px">${esc(f.cw)||""} ${f.vendor?"("+esc(f.vendor)+")":""} · 활용 ${weekCount()}주${f.nowWeek?"/"+f.nowWeek+"주차":""}</div>${sum}<div style="margin-top:6px"><b>요청 과제</b><div style="white-space:pre-wrap">${esc(f.pRequest)||"(미작성)"}</div></div><div style="margin-top:6px"><b>어려움</b><div style="white-space:pre-wrap">${esc(f.difficulty)||"(미작성)"}</div></div>`;
+  $("#loadedCodeBadge").textContent=state.code?"코드 "+state.code:"";
+  // 미리보기
+  const d={n_fmt:f.n?`${f.n}명`:"",weeks_fmt:`${f.nowWeek?f.nowWeek+"주차 진행":""}${f.nowWeek?" / ":""}활용 ${weekCount()}주`,code:state.code||"",consultant:c.cName?`${c.cName}${c.cAffil?" ("+c.cAffil+")":""}`:"",cdate:[c.cDate?c.cDate.replace(/-/g,". ")+".":"",c.cMode].filter(Boolean).join(" · ")};
+  $$("#paper [data-f]").forEach(el=>{const k=el.dataset.f;el.textContent=(k in d)?d[k]:(f[k]||"");});
+  $$("#paper .sec[data-bind]").forEach(el=>{const v=(f[el.dataset.bind]!=null?f[el.dataset.bind]:c[el.dataset.bind])||"";if(el.innerText!==v){el.innerText=v;}el.classList.toggle("empty",!v.trim());});
+  $("#pvChecklist").innerHTML=`<table><colgroup><col style="width:7%"><col style="width:48%"><col style="width:9%"><col></colgroup><tr><th>영역</th><th>진단 항목</th><th>점수</th><th>근거·현황</th></tr>`+
+    AREAS.map(a=>a.items.map((it,i)=>{const ch=state.prof.checks[it.k]||{};return `<tr>${i===0?`<td class="k c" rowspan="${a.items.length}">${a.k}<br><span style="font-weight:400;font-size:10px">${fmt1(areaAvg(a.k))}</span></td>`:""}<td>${it.q}</td><td class="c">${ch.score||"-"}</td><td>${esc(ch.memo)}</td></tr>`;}).join("")).join("")+
+    `<tr><td class="k c" colspan="2">전체 평균</td><td class="c"><b>${fmt1(totalAvg())}</b></td><td>5점 척도(1 전혀 그렇지 않다 ~ 5 매우 그렇다)</td></tr></table>`;
+  $("#pvWeeks").innerHTML=`<table><tr>${Array.from({length:15},(_,i)=>`<th>${i+1}</th>`).join("")}</tr><tr>${state.prof.weeks.map((w,i)=>`<td class="c" style="${w?"background:#e3efe8":""}">${w?"○":(f.nowWeek&&i+1<=+f.nowWeek?"×":"")}</td>`).join("")}</tr></table>`;
+  $("#pvReview").innerHTML=`<table><colgroup><col style="width:26%"><col style="width:11%"><col style="width:11%"><col style="width:9%"><col></colgroup><tr><th>영역</th><th>자가진단</th><th>컨설턴트</th><th>차이</th><th>컨설턴트 의견</th></tr>`+
+    AREAS.map(a=>{const p=areaAvg(a.k),r=state.con.review[a.k]||{};const diff=p&&r.score?(r.score-p):null;return `<tr><td>${a.k}. ${a.name}</td><td class="c">${fmt1(p)}</td><td class="c">${r.score||"-"}</td><td class="c" style="${diff!=null&&Math.abs(diff)>=1?"color:var(--danger);font-weight:700":""}">${diff==null?"-":(diff>0?"+":"")+diff.toFixed(1)}</td><td>${esc(r.comment)}</td></tr>`;}).join("")+`</table>`;
+  const ivs=state.con.iv.filter(iv=>iv.name.trim());
+  $("#pvIv").innerHTML=ivs.length?`<table><colgroup><col style="width:34%"><col><col><col><col><col><col style="width:9%"></colgroup><tr><th>개입안</th><th>수용성</th><th>타당성</th><th>윤리성</th><th>효과성·효율성</th><th>실현가능성</th><th>총점</th></tr>`+ivs.map(iv=>`<tr><td>${esc(iv.name)}</td>${IV_CRIT.map(k=>`<td class="c">${iv[k]||"-"}</td>`).join("")}<td class="c"><b>${ivTotal(iv)||"-"}</b></td></tr>`).join("")+`</table>`:`<div class="sec empty"></div>`;
+  $("#signDate").textContent=new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"});
+}
+
+/* ---------- AI ---------- */
+const SET_KEY="softlab-report-ai";
+function loadCfg(){try{Object.assign(aiCfg,JSON.parse(localStorage.getItem(SET_KEY)||"{}"));}catch(e){} if(!aiCfg.proxy&&!aiCfg.key&&DEFAULT_RELAY)aiCfg.proxy=DEFAULT_RELAY;}
+function saveCfg(){try{localStorage.setItem(SET_KEY,JSON.stringify(aiCfg));}catch(e){}}
+function aiReady(){return !!(sample||aiCfg.proxy||aiCfg.key);}
+function stripFences(t){return String(t||"").replace(/```[a-z]*\n?/gi,"").replace(/```/g,"").trim();}
+function parseSections(txt,keys){
+  const t=stripFences(txt); const out={}; const re=new RegExp("\\[\\[("+keys.join("|")+")\\]\\]","g");
+  const marks=[]; let m; while((m=re.exec(t)))marks.push({k:m[1],i:m.index,e:m.index+m[0].length});
+  if(!marks.length)throw new Error("AI 응답에서 항목을 찾지 못했습니다. 다시 시도해 주세요");
+  marks.forEach((mk,i)=>{const body=t.slice(mk.e,i+1<marks.length?marks[i+1].i:t.length).trim();if(body)out[mk.k]=body;});
+  return out;
+}
+const clean=s=>String(s).replace(/\*\*?/g,"").replace(/^#+\s*/gm,"")
+  .replace(/^(-\s*)?(교수자|학습자)\s*측\s*[^:：\n]{1,14}원인\s*[:：]\s*/gm,"$1")
+  .replace(/^(-\s*)?(개선안 목표|개입안 이름|핵심 내용|교수자 수행문제|학습자 수행문제)\s*[:：]\s*/gm,"$1")
+  .replace(/^-\s*$/gm,"").trim();
+async function askDirect(prompt,opts){
+  const body={model:aiCfg.model||"claude-sonnet-5-5",max_tokens:(opts&&opts.modelTier==="quick")?2000:5000,messages:[{role:"user",content:prompt}]};
+  let url,headers={"content-type":"application/json"};
+  if(aiCfg.proxy){url=aiCfg.proxy;}else{url="https://api.anthropic.com/v1/messages";headers["x-api-key"]=aiCfg.key;headers["anthropic-version"]="2023-06-01";headers["anthropic-dangerous-direct-browser-access"]="true";}
+  let res; try{res=await fetch(url,{method:"POST",headers,body:JSON.stringify(body)});}catch(e){throw {code:"network",message:"AI 서버에 연결하지 못했습니다. 네트워크를 확인해 주세요"};}
+  if(res.status===429){let t="";try{t=(await res.json()).error?.message||"";}catch(e){} throw {code:"http",message:t||"요청이 많아 잠시 후 다시 시도해 주세요"};}
+  if(res.status===401||res.status===403)throw {code:"auth",message:"AI 서버 인증에 실패했습니다. AI 설정을 확인해 주세요"};
+  if(!res.ok){let t="";try{t=(await res.json()).error?.message||"";}catch(e){} throw {code:"http",message:`AI 요청 실패(${res.status}) ${t}`.slice(0,160)};}
+  const j=await res.json();
+  return Array.isArray(j.content)?j.content.filter(x=>x.type==="text").map(x=>typeof x.text==="string"?x.text:JSON.stringify(x.text)).join(""):(j.text||"");
+}
+async function askText(prompt,opts){
+  if(sample){const r=await sample(prompt,Object.assign({modelTier:"default",cache:false},opts||{}));return r.text;}
+  if(aiCfg.proxy||aiCfg.key)return askDirect(prompt,opts);
+  throw {code:"no_ai",message:"AI 설정이 필요합니다. 상단의 AI 설정을 확인해 주세요"};
+}
+const aiError=e=>e&&(e.message||String(e))||"알 수 없는 오류입니다";
+const STYLE=`문체 규칙:
+- 반드시 한국어로만 작성함. 공공기관 보고서 문체로 모든 문장을 명사형 어미(~함, ~됨, ~임, ~있음, ~필요)로 종결함. 존댓말 금지.
+- 별표(*)와 마크다운 서식을 쓰지 않음. 나열은 하이픈(-)으로 시작하는 줄을 사용함.
+- 교수자가 입력한 사실·점수·메모만 근거로 쓰고, 입력에 없는 숫자나 사실을 만들어 내지 않음. 정보가 없으면 "확인 필요"라고 씀.
+- 4단계 적응형 학습(사전 진단 → 맞춤형 학습 → 개별 피드백 → 사후 진단)과 수행공학 수업컨설팅 모형(지향하는 수업/현재 수업/격차, 지식·기술/동기/교육여건 원인, 개입안)의 용어를 사용함.`;
+function profContext(){
+  collect(); const f=state.prof.f;
+  const checks=AREAS.map(a=>`[${a.k}. ${a.name}] 평균 ${fmt1(areaAvg(a.k))}\n`+a.items.map(it=>{const c=state.prof.checks[it.k]||{};return `- ${it.q}: ${c.score?c.score+"점("+SCALE_TXT[c.score]+")":"미응답"}${c.memo?" / 근거: "+c.memo:""}`;}).join("\n")).join("\n");
+  const weeks=state.prof.weeks.map((w,i)=>w?(i+1)+"주":null).filter(Boolean).join(", ")||"없음";
+  return `[기본 정보] 교과목 ${f.course||"-"} / 교수 ${f.prof||"-"} / 소속 ${f.dept||"-"} / Track ${f.track||"-"} / 코스웨어 ${f.cw||"-"}(${f.vendor||"-"}) / 수강 ${f.n||"-"}명 / 현재 ${f.nowWeek||"-"}주차 / 컨설팅 ${f.round||"-"}
+[자가진단 결과] 전체 평균 ${fmt1(totalAvg())}
+${checks}
+[코스웨어 활용 주차] ${weeks} (총 ${weekCount()}주) / 운영 메모: ${f.weekMemo||"-"}
+[어려운 점] ${f.difficulty||"-"}
+[검토받고 싶은 내용] ${f.want||"-"}
+[잘 되는 점] ${f.good||"-"}
+[교수자 작성 지향하는 수업] ${f.pShould||"-"}
+[교수자 작성 현재 수업] ${f.pIs||"-"}
+[교수자 작성 컨설팅 요청 과제] ${f.pRequest||"-"}`;
+}
+function consultContext(){
+  collect(); const c=state.con.f;
+  const rev=AREAS.map(a=>{const r=state.con.review[a.k]||{};return `- ${a.k}. ${a.name}: 자가진단 ${fmt1(areaAvg(a.k))} / 컨설턴트 평정 ${r.score||"미입력"}${r.comment?" / 의견: "+r.comment:""}`;}).join("\n");
+  return `${profContext()}
+
+[컨설턴트 영역별 평정과 의견]
+${rev}
+[컨설턴트가 이미 작성한 내용(있으면 존중하고 보완)]
+지향: ${c.cShould||"-"} / 현재: ${c.cIs||"-"} / 격차: ${c.cGap||"-"} / 종합: ${c.overall||"-"}`;
+}
+async function profAI(){
+  const st=$("#profAIStatus"), b=$("#btnProfAI");
+  if(!aiReady()){setStatus(st,"AI 설정이 필요합니다","err");openSettings();return;}
+  collect(); if(totalAvg()===0){setStatus(st,"자가진단 항목을 먼저 체크해 주세요","err");return;}
+  b.disabled=true; setStatus(st,"요약 초안을 작성하고 있습니다(약 20~40초)…");
+  try{
+    const out=parseSections(await askText(`당신은 대학 에듀테크 소프트랩 사업단의 수업컨설팅 전문가임. 아래 교수자의 자가진단 자료를 바탕으로 교수자 입장에서 정리한 세 단락을 작성함.
+${STYLE}
+항목:
+- should: 지향하는 수업 — 교수자가 목표로 하는 수업 모습(교육적 문제 해결 방향, 4단계 적응형 요소가 제대로 작동하는 모습) 3~5문장
+- is: 현재 수업 — 자가진단 점수가 낮은 항목과 메모, 활용 주차 현황, 어려움을 근거로 한 현재 모습 3~6문장. 잘 되는 점도 한 문장 포함
+- request: 컨설팅 요청 과제 — 구체적이고 측정 가능한 과제 1~2개를 하이픈 줄로(예: "- 학기 후반 적응형 퀴즈 참여율을 60%에서 85% 이상으로 높이기")
+출력 형식: 아래 구분선을 이 순서대로 쓰고 그 다음 줄부터 본문만 씀. 구분선 밖에 아무 말도 쓰지 않음.
+[[should]]
+[[is]]
+[[request]]
+
+[교수자 자가진단 자료]
+${profContext()}`),["should","is","request"]);
+    if(out.should)$("#pShould").value=clean(out.should); if(out.is)$("#pIs").value=clean(out.is); if(out.request)$("#pRequest").value=clean(out.request);
+    save(); setStatus(st,"초안을 작성했습니다. 내용을 확인하고 자유롭게 고쳐 주세요","ok"); toast("요약 초안이 작성되었습니다");
+  }catch(e){setStatus(st,"작성 실패: "+aiError(e),"err");}
+  finally{b.disabled=false;}
+}
+async function consultAI(){
+  const st=$("#consultAIStatus"), b=$("#btnConsultAI");
+  if(!aiReady()){setStatus(st,"AI 설정이 필요합니다","err");openSettings();return;}
+  collect(); if(totalAvg()===0&&!state.prof.f.difficulty){setStatus(st,"교수자 자가진단 내용이 없습니다. 접수 코드로 먼저 불러와 주세요","err");return;}
+  b.disabled=true; setStatus(st,"분석·개선안 초안을 작성하고 있습니다(약 30~60초)…");
+  const keys=["should","is","gap","tk","sk","tm","sm","te","se","gt","gs","iv","final","overall","followup"];
+  try{
+    const out=parseSections(await askText(`당신은 수행공학 기반 수업컨설팅 모형에 숙련된 대학 수업컨설턴트임. 아래 자료를 바탕으로 수업운영 컨설팅 결과서 초안을 작성함. 컨설턴트가 검토·수정할 초안이므로 근거를 분명히 하고 단정적 비난을 피함.
+${STYLE}
+항목(각 3~6문장 또는 하이픈 줄 3~6개):
+- should: 지향하는 수업(Should) — 교수자 목표와 사업단 실증 표준(4단계 적응형, 활용 주차 기준)을 결합한 바람직한 모습
+- is: 현재 수업(Is) — 자가진단 점수·메모, 컨설턴트 평정·의견, 활용 주차를 근거로 한 현재 모습. 점수가 낮거나 자가진단과 컨설턴트 평정 차이가 큰 영역을 중심으로
+- gap: 격차(Gap)와 수업 문제 규정 — 교수자 수행문제와 학습자 수행문제를 각각 하이픈 줄로 규정
+- tk: 교수자 측 지식·기술 원인 / sk: 학습자 측 지식·기술 원인 / tm: 교수자 측 동기 원인 / sm: 학습자 측 동기 원인 / te: 교수자 측 교육여건 원인 / se: 학습자 측 교육여건 원인 — 각 하이픈 줄 1~3개, 근거가 없으면 "확인 필요: (확인할 내용)"으로 씀
+- gt: 개선안 목표(교수자) 2~3개 하이픈 줄 / gs: 개선안 목표(학습자) 2~3개 하이픈 줄
+- iv: 개입안 후보 4개 — 한 줄에 하나씩 "개입안 이름 | 핵심 내용(남은 주차에 실행 가능한 구체적 행동)" 형식. 점수는 쓰지 않음
+- final: 최종 개선안과 남은 주차 실행 계획 — 우선순위가 높은 개입안 2개를 어느 주차에 어떻게 적용할지, 효과 확인 방법(대시보드 지표, 사후 진단)
+- overall: 종합 의견 — 강점 2가지, 보완점 2가지, 격려 한 문장
+- followup: 후속 조치 — 사업단·기업 지원 요청, 결과보고서 작성 시 반영할 사항, 다음 컨설팅 일정 제안
+출력 형식: 아래 구분선을 이 순서대로 쓰고 그 다음 줄부터 본문만 씀. 구분선 밖에 아무 말도 쓰지 않음.
+${keys.map(k=>"[["+k+"]]").join("\n")}
+
+[자료]
+${consultContext()}`),keys);
+    const map={should:"cShould",is:"cIs",gap:"cGap",tk:"c_tk",sk:"c_sk",tm:"c_tm",sm:"c_sm",te:"c_te",se:"c_se",gt:"gT",gs:"gS",final:"finalPlan",overall:"overall",followup:"followup"};
+    Object.entries(map).forEach(([k,id])=>{if(out[k])$("#"+id).value=(k==="gap"?String(out[k]).replace(/\*\*?/g,"").trim():clean(out[k]));});
+    if(out.iv){
+      const lines=stripFences(out.iv).split(/\n/).map(l=>l.replace(/^[-•\d.)\s]+/,"").trim()).filter(Boolean);
+      const ivs=lines.slice(0,6).map(l=>{const [name,desc]=l.split("|").map(x=>(x||"").replace(/^(개입안\s*이름|개입안|핵심\s*내용)\s*[:：]\s*/,"").trim());return {name:desc?`${name}: ${desc}`:name,acc:"",val:"",eth:"",eff:"",fea:""};});
+      if(ivs.length){const existing=state.con.iv.filter(iv=>iv.name.trim());state.con.iv=existing.concat(ivs).slice(0,8);renderIv();}
+    }
+    save(); setStatus(st,"초안을 작성했습니다. 각 항목을 검토·수정하고 개입안 점수를 매겨 주세요","ok"); toast("컨설팅 초안이 작성되었습니다");
+  }catch(e){setStatus(st,"작성 실패: "+aiError(e),"err");}
+  finally{b.disabled=false;}
+}
+
+/* ---------- 제출/불러오기 ---------- */
+function blobToBase64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(blob);});}
+async function postJson(payload){
+  if(!UPLOAD_URL)throw new Error("제출 수신기가 아직 연결되지 않았습니다. 사업단에 문의해 주세요");
+  const body=JSON.stringify(payload); let res=null,lastErr=null;
+  for(let attempt=1;attempt<=3&&!res;attempt++){
+    try{res=await fetch(UPLOAD_URL,{method:"POST",body,redirect:"follow"});}
+    catch(e){lastErr=e;if(attempt<3)await new Promise(r=>setTimeout(r,2000*attempt));}
+  }
+  if(!res)throw new Error("사업단 서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요");
+  const j=await res.json().catch(()=>({ok:false,message:"응답을 읽지 못했습니다"}));
+  if(!j.ok)throw new Error(j.message||"전송 실패");
+  return j;
+}
+function fileBase(kind){const f=state.prof.f;return `수업운영컨설팅_${kind}_${(f.track||"Track미선택").replace(/\s+/g,"")}_${(f.course||"교과목").replace(/[\\/:*?"<>|\s]+/g,"_")}_${(f.prof||"").replace(/\s+/g,"")||"교수"}`;}
+async function submitRequest(){
+  const st=$("#reqStatus"), b=$("#btnSubmitReq"); collect(); const f=state.prof.f;
+  if(!f.track){setStatus(st,"실증 Track은 필수 선택입니다","err");$("#track").focus();return;}
+  if(!f.course||!f.prof){setStatus(st,"교과목명과 담당 교수를 입력해 주세요","err");return;}
+  if(totalAvg()===0){setStatus(st,"자가진단 항목을 먼저 체크해 주세요","err");return;}
+  b.disabled=true;
+  try{
+    setStatus(st,"자가진단 PDF를 만들고 있습니다…");
+    const pdf=await buildPdfBlob();
+    setStatus(st,"사업단으로 전송하고 있습니다…");
+    const j=await postJson({kind:"consult-request",code:state.code||"",meta:{track:f.track,course:f.course,prof:f.prof,dept:f.dept,cw:f.cw,avg:fmt1(totalAvg())},data:{prof:state.prof},files:[{filename:fileBase("자가진단")+".pdf",mime:"application/pdf",base64:await blobToBase64(pdf)}]});
+    state.code=j.code; save(); $("#codeArea").style.display="";$("#codeText").textContent=j.code;$("#loadCode").value=j.code;
+    setStatus(st,`제출 완료. 접수 코드 ${j.code} (「${j.folder}」 폴더에 저장됨)`,"ok"); toast("컨설팅 요청이 제출되었습니다");
+  }catch(e){setStatus(st,"제출 실패: "+aiError(e),"err");}
+  finally{b.disabled=false;}
+}
+async function loadByCode(){
+  const st=$("#loadStatus"), code=$("#loadCode").value.trim().toUpperCase();
+  if(code.length<4){setStatus(st,"접수 코드를 입력해 주세요","err");return;}
+  setStatus(st,"불러오는 중…");
+  try{
+    if(!UPLOAD_URL)throw new Error("제출 수신기가 아직 연결되지 않았습니다");
+    const res=await fetch(UPLOAD_URL+"?code="+encodeURIComponent(code),{redirect:"follow"});
+    const j=await res.json().catch(()=>({ok:false,message:"응답을 읽지 못했습니다"}));
+    if(!j.ok)throw new Error(j.message||"불러오기 실패");
+    const req=j.request&&j.request.data&&j.request.data.prof;
+    if(!req)throw new Error("자가진단 데이터 형식이 올바르지 않습니다");
+    state.code=code; state.prof=Object.assign({f:{},checks:{},weeks:Array(15).fill(false)},req);
+    if(j.result&&j.result.data&&j.result.data.con){state.con=Object.assign({f:{},review:{},iv:[]},j.result.data.con);}
+    apply(); save();
+    const when=j.request.savedAt?new Date(j.request.savedAt).toLocaleString("ko-KR"):"";
+    $("#loadedInfo").innerHTML=`불러옴: <b>${esc(state.prof.f.course)}</b> · ${esc(state.prof.f.prof)} · ${esc(state.prof.f.track)} (제출 ${when})${j.result?" · <span style='color:var(--consult)'>컨설팅 결과 등록됨</span>":""}`;
+    setStatus(st,"불러왔습니다","ok"); toast("교수자 자가진단을 불러왔습니다");
+  }catch(e){setStatus(st,"불러오기 실패: "+aiError(e),"err");}
+}
+async function submitResult(){
+  const st=$("#resStatus"), b=$("#btnSubmitRes"); collect(); const c=state.con.f, f=state.prof.f;
+  if(!state.code){setStatus(st,"접수 코드가 없습니다. 먼저 교수자 자가진단을 불러오거나 교수자 탭에서 제출해 주세요","err");return;}
+  if(!c.cName){setStatus(st,"컨설턴트 성명을 입력해 주세요","err");return;}
+  if(!c.cShould&&!c.overall){setStatus(st,"수업 분석 또는 종합 의견을 작성해 주세요","err");return;}
+  b.disabled=true;
+  try{
+    setStatus(st,"결과서 PDF·DOCX를 만들고 있습니다…");
+    const [pdf,docx]=await Promise.all([buildPdfBlob(),buildDocxBlob()]);
+    setStatus(st,"사업단으로 전송하고 있습니다…");
+    const j=await postJson({kind:"consult-result",code:state.code,meta:{track:f.track,course:f.course,prof:f.prof,dept:f.dept,cw:f.cw,consultant:c.cName,avg:fmt1(totalAvg())},data:{con:state.con},
+      files:[{filename:fileBase("결과서")+".pdf",mime:"application/pdf",base64:await blobToBase64(pdf)},{filename:fileBase("결과서")+".docx",mime:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",base64:await blobToBase64(docx)}]});
+    setStatus(st,`제출 완료: 「${j.folder}」 폴더에 ${j.files.map(x=>x.name).join(", ")} 저장됨`,"ok"); toast("컨설팅 결과가 제출되었습니다");
+  }catch(e){setStatus(st,"제출 실패: "+aiError(e),"err");}
+  finally{b.disabled=false;}
+}
+
+/* ---------- 내보내기 ---------- */
+async function saveFile(filename,data,label){
+  const st=$("#exportStatus");
+  if(!downloads){
+    if(inClaude){setStatus(st,"이 화면에서는 파일 저장이 지원되지 않습니다. 텍스트 복사를 이용해 주세요","err");return;}
+    try{const blob=data instanceof Blob?data:new Blob([data]);const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);setStatus(st,`${label} 파일을 내려받았습니다: ${filename}`,"ok");}catch(e){setStatus(st,"저장 실패: "+(e&&e.message||e),"err");}
+    return;
+  }
+  try{await downloads.save({filename,data});setStatus(st,`${label} 파일이 저장되었습니다: ${filename}`,"ok");}
+  catch(e){setStatus(st,e&&e.code==="declined"?"저장을 취소했습니다":"저장 실패: "+(e&&e.message||e),e&&e.code==="declined"?"":"err");}
+}
+async function buildPdfBlob(){
+  render(); let host=null;
+  try{
+    const clone=$("#paper").cloneNode(true); clone.id="paper-export"; clone.className="paper export";
+    clone.querySelectorAll(".sec").forEach(x=>{x.removeAttribute("contenteditable");x.classList.remove("empty");if(!x.innerText.trim())x.innerText="(미작성)";});
+    clone.querySelectorAll("h3").forEach(h=>{const body=h.nextElementSibling;const wrap=document.createElement("div");wrap.className="keep";h.parentNode.insertBefore(wrap,h);wrap.appendChild(h);if(body&&(body.classList.contains("sec")||body.id==="pvWeeks"))wrap.appendChild(body);});
+    host=document.createElement("div"); host.style.cssText="position:absolute;left:0;top:0;width:210mm;z-index:-1;opacity:0;pointer-events:none;background:#fff";
+    host.appendChild(clone); document.body.appendChild(host); await new Promise(r=>setTimeout(r,50));
+    return await html2pdf().set({margin:[15,0,18,0],html2canvas:{scale:2,useCORS:true,letterRendering:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".keep"]}}).from(clone).outputPdf("blob");
+  }finally{if(host)host.remove();}
+}
+async function buildDocxBlob(){
+  if(!window.docx)throw new Error("문서 라이브러리를 불러오지 못했습니다. 새로 고침 후 다시 시도해 주세요");
+  collect(); const D=window.docx, f=state.prof.f, c=state.con.f, FONT="맑은 고딕";
+  const run=(t,o={})=>new D.TextRun(Object.assign({text:t,font:FONT,size:20},o));
+  const P=(t,o={})=>new D.Paragraph(Object.assign({children:[run(t,o.run||{})],spacing:{after:70,line:290}},o.p||{}));
+  const H=(t,color)=>new D.Paragraph({children:[run(t,{bold:true,size:25,color:color||"1F3864"})],spacing:{before:240,after:90},border:{bottom:{style:D.BorderStyle.SINGLE,size:8,color:color||"1F3864",space:2}}});
+  const H3=t=>new D.Paragraph({children:[run(t,{bold:true,size:21})],spacing:{before:160,after:50}});
+  const B={style:D.BorderStyle.SINGLE,size:4,color:"9AA4B1"}; const borders={top:B,bottom:B,left:B,right:B,insideHorizontal:B,insideVertical:B};
+  const cell=(t,o={})=>new D.TableCell({children:String(t||"").split(/\n+/).map(line=>new D.Paragraph({children:[run(line,{size:18,bold:!!o.bold})],alignment:o.center?D.AlignmentType.CENTER:D.AlignmentType.LEFT})),shading:o.fill?{type:D.ShadingType.CLEAR,fill:o.fill,color:"auto"}:undefined,width:o.w?{size:o.w,type:D.WidthType.DXA}:undefined,rowSpan:o.rs,columnSpan:o.cs,margins:{top:50,bottom:50,left:90,right:90}});
+  const T=(rows,widths)=>new D.Table({width:{size:100,type:D.WidthType.PERCENTAGE},columnWidths:widths,borders,rows});
+  const W=9638, pct=p=>Math.round(W*p/100);
+  const kv=(k1,v1,k2,v2)=>new D.TableRow({children:[cell(k1,{bold:true,fill:"F4F6F9",w:pct(18)}),cell(v1,{w:pct(32)}),cell(k2,{bold:true,fill:"F4F6F9",w:pct(18)}),cell(v2,{w:pct(32)})]});
+  const consultant=c.cName?`${c.cName}${c.cAffil?" ("+c.cAffil+")":""}`:"";
+  const info=T([kv("교과목명",f.course,"담당 교수",f.prof),kv("대학·소속",f.dept,"실증 Track",f.track),kv("AI 코스웨어",f.cw,"공급 기업",f.vendor),kv("수강 인원",f.n?f.n+"명":"","진행 주차 / 활용 주차",`${f.nowWeek?f.nowWeek+"주차 진행 / ":""}활용 ${weekCount()}주`),kv("컨설팅 회차",f.round,"접수 코드",state.code),kv("컨설턴트",consultant,"컨설팅 일자·방식",[c.cDate,c.cMode].filter(Boolean).join(" · "))],[pct(18),pct(32),pct(18),pct(32)]);
+  const chkRows=[new D.TableRow({tableHeader:true,children:[cell("영역",{bold:true,fill:"E9EEF7",center:true,w:pct(8)}),cell("진단 항목",{bold:true,fill:"E9EEF7",center:true,w:pct(48)}),cell("점수",{bold:true,fill:"E9EEF7",center:true,w:pct(9)}),cell("근거·현황",{bold:true,fill:"E9EEF7",center:true,w:pct(35)})]})];
+  AREAS.forEach(a=>a.items.forEach((it,i)=>{const ch=state.prof.checks[it.k]||{};const cells=[];if(i===0)cells.push(cell(`${a.k}\n${fmt1(areaAvg(a.k))}`,{bold:true,fill:"F4F6F9",center:true,rs:a.items.length,w:pct(8)}));cells.push(cell(it.q,{w:pct(48)}),cell(ch.score||"-",{center:true,w:pct(9)}),cell(ch.memo||"",{w:pct(35)}));chkRows.push(new D.TableRow({children:cells}));}));
+  chkRows.push(new D.TableRow({children:[cell("전체 평균",{bold:true,fill:"F4F6F9",center:true,w:pct(56),cs:2}),cell(fmt1(totalAvg()),{center:true,bold:true,w:pct(9)}),cell("5점 척도",{w:pct(35)})]}));
+  const weeksTbl=T([new D.TableRow({children:Array.from({length:15},(_,i)=>cell(String(i+1),{bold:true,fill:"E9EEF7",center:true,w:Math.round(W/15)}))}),new D.TableRow({children:state.prof.weeks.map((w,i)=>cell(w?"○":(f.nowWeek&&i+1<=+f.nowWeek?"×":""),{center:true,w:Math.round(W/15)}))})],Array(15).fill(Math.round(W/15)));
+  const revRows=[new D.TableRow({tableHeader:true,children:[cell("영역",{bold:true,fill:"EFE9F7",center:true,w:pct(26)}),cell("자가진단",{bold:true,fill:"EFE9F7",center:true,w:pct(11)}),cell("컨설턴트",{bold:true,fill:"EFE9F7",center:true,w:pct(11)}),cell("차이",{bold:true,fill:"EFE9F7",center:true,w:pct(9)}),cell("컨설턴트 의견",{bold:true,fill:"EFE9F7",center:true,w:pct(43)})]})];
+  AREAS.forEach(a=>{const p=areaAvg(a.k),r=state.con.review[a.k]||{};const diff=p&&r.score?(r.score-p):null;revRows.push(new D.TableRow({children:[cell(`${a.k}. ${a.name}`,{w:pct(26)}),cell(fmt1(p),{center:true,w:pct(11)}),cell(r.score||"-",{center:true,w:pct(11)}),cell(diff==null?"-":(diff>0?"+":"")+diff.toFixed(1),{center:true,w:pct(9)}),cell(r.comment||"",{w:pct(43)})]}));});
+  const two=(k,v)=>new D.TableRow({children:[cell(k,{bold:true,fill:"F4F6F9",w:pct(14)}),cell(v||"(미작성)",{w:pct(86)})]});
+  const three=(k,a,b)=>new D.TableRow({children:[cell(k,{bold:true,fill:"F4F6F9",w:pct(14)}),cell(a||"",{w:pct(43)}),cell(b||"",{w:pct(43)})]});
+  const ivs=state.con.iv.filter(iv=>iv.name.trim());
+  const ivRows=[new D.TableRow({tableHeader:true,children:[cell("개입안",{bold:true,fill:"EFE9F7",center:true,w:pct(34)}),...["수용성","타당성","윤리성","효과성·효율성","실현가능성"].map(h=>cell(h,{bold:true,fill:"EFE9F7",center:true,w:pct(11.4)})),cell("총점",{bold:true,fill:"EFE9F7",center:true,w:pct(9)})]})].concat(ivs.map(iv=>new D.TableRow({children:[cell(iv.name,{w:pct(34)}),...IV_CRIT.map(k=>cell(iv[k]||"-",{center:true,w:pct(11.4)})),cell(String(ivTotal(iv)||"-"),{center:true,bold:true,w:pct(9)})]})));
+  const sec=t=>(t||"(미작성)").split(/\n+/).map(l=>P(l));
+  const children=[
+    new D.Paragraph({children:[run("고등교육 에듀테크 소프트랩 실증",{size:18,color:"555555"})],alignment:D.AlignmentType.CENTER}),
+    new D.Paragraph({children:[run("AI 코스웨어 실증 수업운영 컨설팅 결과서",{bold:true,size:36,color:"1F3864"})],alignment:D.AlignmentType.CENTER,spacing:{after:40}}),
+    new D.Paragraph({children:[run("(교수자 자가진단 및 컨설턴트 검토)",{size:22})],alignment:D.AlignmentType.CENTER,spacing:{after:200}}),
+    info,
+    H("Ⅰ. 교수자 자가진단 결과"), T(chkRows,[pct(8),pct(48),pct(9),pct(35)]),
+    H3("코스웨어 활용 주차 현황"), weeksTbl, ...sec(f.weekMemo),
+    H3("교수자가 본 지향하는 수업(Should)"),...sec(f.pShould),
+    H3("교수자가 본 현재 수업(Is)"),...sec(f.pIs),
+    H3("운영상 어려움"),...sec(f.difficulty),
+    H3("컨설팅 요청 과제"),...sec(f.pRequest),
+    H("Ⅱ. 컨설턴트 검토","5B3A8C"),
+    H3("영역별 자가진단·컨설턴트 평정 비교"), T(revRows,[pct(26),pct(11),pct(11),pct(9),pct(43)]),
+    H3("수업 분석"), T([two("지향하는 수업",c.cShould),two("현재 수업",c.cIs),two("격차·수업 문제",c.cGap)],[pct(14),pct(86)]),
+    H3("원인 분석"), T([new D.TableRow({tableHeader:true,children:[cell("영역",{bold:true,fill:"EFE9F7",center:true,w:pct(14)}),cell("교수자",{bold:true,fill:"EFE9F7",center:true,w:pct(43)}),cell("학습자",{bold:true,fill:"EFE9F7",center:true,w:pct(43)})]}),three("지식·기술",c.c_tk,c.c_sk),three("동기",c.c_tm,c.c_sm),three("교육여건",c.c_te,c.c_se)],[pct(14),pct(43),pct(43)]),
+    H3("개선안 목표"), T([two("교수자",c.gT),two("학습자",c.gS)],[pct(14),pct(86)]),
+    H3("개입안 평가"), ...(ivs.length?[T(ivRows,[pct(34),pct(11.4),pct(11.4),pct(11.4),pct(11.4),pct(11.4),pct(9)])]:[P("(미작성)")]),
+    H3("최종 개선안 및 실행 계획"),...sec(c.finalPlan),
+    H3("종합 의견"),...sec(c.overall),
+    H3("후속 조치"),...sec(c.followup),
+    new D.Paragraph({children:[run(`교수자: ${f.prof||"        "} (서명)      컨설턴트: ${c.cName||"        "} (서명)      작성일: ${$("#signDate").textContent}`)],alignment:D.AlignmentType.RIGHT,spacing:{before:400}}),
+    new D.Paragraph({children:[run("한림대학교 에듀테크소프트랩사업단",{size:16,color:"666666"})],alignment:D.AlignmentType.CENTER,spacing:{before:300}})
+  ];
+  const doc=new D.Document({styles:{default:{document:{run:{font:FONT,size:20}}}},sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},footers:{default:new D.Footer({children:[new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({children:[D.PageNumber.CURRENT],font:FONT,size:18})]})]})},children}]});
+  return await D.Packer.toBlob(doc);
+}
+async function exportPdf(){const b=$("#btnPdf");b.disabled=true;setStatus($("#exportStatus"),"PDF를 만들고 있습니다…");try{await saveFile(fileBase("결과서")+".pdf",await buildPdfBlob(),"PDF");}catch(e){setStatus($("#exportStatus"),"PDF 생성 실패: "+(e&&e.message||e),"err");}finally{b.disabled=false;}}
+async function exportDocx(){const b=$("#btnDocx");b.disabled=true;setStatus($("#exportStatus"),"DOCX를 만들고 있습니다…");try{await saveFile(fileBase("결과서")+".docx",await buildDocxBlob(),"DOCX");}catch(e){setStatus($("#exportStatus"),"DOCX 생성 실패: "+(e&&e.message||e),"err");}finally{b.disabled=false;}}
+async function copyText(){try{await navigator.clipboard.writeText($("#paper").innerText);toast("결과서 텍스트를 복사했습니다");}catch(e){toast("복사가 허용되지 않았습니다. 본문을 직접 선택해 복사해 주세요");}}
+
+/* ---------- 화면 ---------- */
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600);}
+function setStatus(el,msg,cls){el.textContent=msg||"";el.className="status"+(cls?" "+cls:"");}
+function showPane(name){$$(".pane").forEach(p=>p.classList.toggle("active",p.id==="pane-"+name));$$(".role-tabs .btn").forEach(b=>{b.classList.toggle("on",b.dataset.pane===name);b.classList.toggle("c",b.dataset.pane==="consult"&&name==="consult");});window.scrollTo({top:0,behavior:"smooth"});if(name==="preview")render();}
+function openSettings(){$("#setProxy").value=aiCfg.proxy||"";$("#setKey").value=aiCfg.key||"";$("#setModel").value=aiCfg.model||"claude-sonnet-5-5";setStatus($("#setStatus"),sample?"claude.ai 내장 AI가 연결되어 있습니다.":(aiReady()?"사업단 AI 서버가 연결되어 있습니다.":""),"ok");$("#settingsModal").classList.add("show");}
+function bind(){
+  buildChecklist(); load(); apply(); render();
+  let h; const onInput=()=>{clearTimeout(h);h=setTimeout(save,400);};
+  ["#pane-prof","#pane-consult"].forEach(s=>{$(s).addEventListener("input",onInput);$(s).addEventListener("change",onInput);});
+  $("#paper").addEventListener("input",e=>{const el=e.target.closest(".sec[data-bind]");if(el){const id=el.dataset.bind;$("#"+id).value=el.innerText.trim();el.classList.toggle("empty",!el.innerText.trim());onInput();}});
+  $$(".role-tabs .btn").forEach(b=>b.addEventListener("click",()=>showPane(b.dataset.pane)));
+  $("#btnProfAI").addEventListener("click",profAI);
+  $("#btnConsultAI").addEventListener("click",consultAI);
+  $("#btnSubmitReq").addEventListener("click",submitRequest);
+  $("#btnLoad").addEventListener("click",loadByCode);
+  $("#loadCode").addEventListener("keydown",e=>{if(e.key==="Enter")loadByCode();});
+  $("#btnSubmitRes").addEventListener("click",submitResult);
+  $("#btnCopyCode").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(state.code);toast("코드를 복사했습니다");}catch(e){toast("복사가 허용되지 않았습니다");}});
+  $("#btnAddIv").addEventListener("click",()=>{collect();state.con.iv.push({name:"",acc:"",val:"",eth:"",eff:"",fea:""});renderIv();save();});
+  $("#ivBody").addEventListener("click",e=>{const b=e.target.closest("[data-del]");if(b){collect();state.con.iv.splice(+b.dataset.del,1);renderIv();save();}});
+  $("#btnCopy").addEventListener("click",copyText);
+  $("#btnPdf").addEventListener("click",exportPdf);
+  $("#btnDocx").addEventListener("click",exportDocx);
+  $("#btnSettings").addEventListener("click",openSettings);
+  $("#setCancel").addEventListener("click",()=>$("#settingsModal").classList.remove("show"));
+  $("#setSave").addEventListener("click",()=>{aiCfg.proxy=$("#setProxy").value.trim();aiCfg.key=$("#setKey").value.trim();aiCfg.model=$("#setModel").value;saveCfg();$("#settingsModal").classList.remove("show");toast("AI 설정을 저장했습니다");});
+  $("#btnReset").addEventListener("click",()=>{const b=$("#btnReset");if(!b.dataset.arm){b.dataset.arm="1";b.textContent="정말 초기화하시려면 다시 클릭";setTimeout(()=>{delete b.dataset.arm;b.textContent="입력 초기화";},3000);return;}try{localStorage.removeItem(STORE);}catch(e){}location.reload();});
+  if(location.hash==="#consult")showPane("consult");
+}
+loadCfg(); bind();
+(async()=>{
+  if(!window.claude||typeof window.claude.use!=="function")return;
+  inClaude=true;
+  try{sample=await window.claude.use("sample");}catch(e){sample=null;}
+  try{downloads=await window.claude.use("downloads");}catch(e){downloads=null;}
+})();
+})();
+</script>
+</body>
+</html>
