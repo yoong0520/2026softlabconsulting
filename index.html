@@ -141,17 +141,21 @@ table.iv td.t{font-weight:700;color:var(--brand)}
   <div>
   <div class="card">
     <h2><span class="num">1</span>기본 정보</h2>
+    <div class="hint">배정 교과목을 고르면 아래 칸이 자동으로 채워집니다(명단에 없으면 직접 입력).</div>
     <div class="grid">
+      <label class="f full">배정 교과목 선택(2026-2학기 컨설팅 대상)
+        <select id="pick"><option value="">명단을 불러오는 중…</option></select></label>
+      <label class="f">대학명<input id="univ" placeholder="예: 한림대학교"></label>
+      <label class="f">담당 컨설턴트<input id="assigned" placeholder="배정 교과목 선택 시 자동 표시" readonly style="background:#f4f6f9"></label>
       <label class="f">교과목명<input id="course" placeholder="예: C프로그래밍"></label>
       <label class="f">담당 교수<input id="prof" placeholder="성명"></label>
-      <label class="f">대학·소속<input id="dept" placeholder="예: 한림대학교 소프트웨어학부"></label>
+      <label class="f">소속 학과<input id="dept" placeholder="예: 소프트웨어학부"></label>
       <label class="f">실증 Track <span style="color:var(--danger)">(필수)</span>
         <select id="track" required>
           <option value="">선택(필수)</option>
           <option>Track 1 신규 개발</option>
           <option>Track 2 신규 심화</option>
           <option>Track 2 기개발 심화</option>
-          <option>기타 에듀테크</option>
         </select></label>
       <label class="f">AI 코스웨어명<input id="cw" placeholder="예: 코스모스, 풀리캠퍼스"></label>
       <label class="f">공급 기업<input id="vendor" placeholder="예: 유비온, 프리윌린"></label>
@@ -171,7 +175,7 @@ table.iv td.t{font-weight:700;color:var(--brand)}
 
   <div class="card">
     <h2><span class="num">3</span>지금까지의 코스웨어 활용 주차 <span class="badge" id="weekBadge">활용 0주</span></h2>
-    <div class="hint">코스웨어를 실제로 활용한 주차를 눌러 표시해 주세요(현재 주차까지). 기준: Track 1·2는 학기 중 8주 이상, 기타 에듀테크는 3~5주 이상.</div>
+    <div class="hint">코스웨어를 실제로 활용한 주차를 눌러 표시해 주세요(현재 주차까지). 기준: 학기 중 8주 이상 활용.</div>
     <div class="weeks" id="weeks"></div>
     <label class="f" style="margin-top:8px">운영 현황 메모(활용 방식, 미활용 주차 사유 등)<textarea id="weekMemo" placeholder="예: 매주 강의 후 20분 연습, 8주차는 중간고사로 미활용, 대시보드는 격주 확인"></textarea></label>
   </div>
@@ -221,9 +225,15 @@ table.iv td.t{font-weight:700;color:var(--brand)}
 <section class="pane" id="pane-consult">
   <div class="card c">
     <h2><span class="num">C</span>교수자 자가진단 불러오기</h2>
+    <div class="row" style="margin-bottom:8px">
+      <select id="pickConsultant" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px"><option value="">컨설턴트 선택(배정 교과목 보기)</option></select>
+      <button class="btn consult" id="btnMyList">배정 교과목 현황</button>
+      <span class="status" id="listStatus"></span>
+    </div>
+    <div id="assignList" style="margin-bottom:8px"></div>
     <div class="row">
       <input id="loadCode" placeholder="접수 코드 6자리" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:160px;text-transform:uppercase;letter-spacing:2px">
-      <button class="btn consult" id="btnLoad">불러오기</button>
+      <button class="btn consult" id="btnLoad">코드로 불러오기</button>
       <span class="status" id="loadStatus"></span>
     </div>
     <div class="hint" style="margin-top:8px">접수 코드가 없고 같은 컴퓨터에서 교수자 탭을 작성했다면, 그 내용이 그대로 사용됩니다. 불러온 교수자 내용은 아래 미리보기·결과서에 함께 표시됩니다.</div>
@@ -329,7 +339,7 @@ table.iv td.t{font-weight:700;color:var(--brand)}
     <table id="infoTable">
       <colgroup><col style="width:18%"><col style="width:32%"><col style="width:18%"><col style="width:32%"></colgroup>
       <tr><td class="k">교과목명</td><td data-f="course"></td><td class="k">담당 교수</td><td data-f="prof"></td></tr>
-      <tr><td class="k">대학·소속</td><td data-f="dept"></td><td class="k">실증 Track</td><td data-f="track"></td></tr>
+      <tr><td class="k">대학·소속</td><td data-f="univ_dept"></td><td class="k">실증 Track</td><td data-f="track"></td></tr>
       <tr><td class="k">AI 코스웨어</td><td data-f="cw"></td><td class="k">공급 기업</td><td data-f="vendor"></td></tr>
       <tr><td class="k">수강 인원</td><td data-f="n_fmt"></td><td class="k">진행 주차 / 활용 주차</td><td data-f="weeks_fmt"></td></tr>
       <tr><td class="k">컨설팅 회차</td><td data-f="round"></td><td class="k">접수 코드</td><td data-f="code"></td></tr>
@@ -413,7 +423,7 @@ const AREAS=[
    {k:"b3",q:"학생 개별 피드백이 적시에 제공되고 있음",s:"AI 피드백·교수 피드백의 시점과 방식"},
    {k:"b4",q:"사후(수준) 진단 계획이 구체적으로 수립되어 있음",s:"예정 주차, 도구, 사전 진단과의 비교 계획"}]},
  {k:"C",name:"코스웨어 활용 충실도",items:[
-   {k:"c1",q:"계획한 주차 기준에 맞게 코스웨어를 꾸준히 활용하고 있음",s:"Track 1·2 8주 이상, 기타 3~5주 이상"},
+   {k:"c1",q:"계획한 주차 기준에 맞게 코스웨어를 꾸준히 활용하고 있음",s:"학기 중 8주 이상"},
    {k:"c2",q:"수업 중 활용과 수업 외 활용(과제·자율학습)이 연계되어 있음",s:"수업 전·중·후 역할 구분"},
    {k:"c3",q:"코스웨어 활동이 성적 평가에 반영되어 학생 참여 유인이 있음",s:"반영 비율, 반영 방식"}]},
  {k:"D",name:"학습자 참여와 데이터 활용",items:[
@@ -428,7 +438,7 @@ const ITEMS=AREAS.flatMap(a=>a.items.map(i=>Object.assign({area:a.k},i)));
 const IV_CRIT=["acc","val","eth","eff","fea"];
 
 /* ---------- 상태 ---------- */
-const PROF_FIELDS=["course","prof","dept","track","cw","vendor","n","nowWeek","round","contact","weekMemo","difficulty","want","good","pShould","pIs","pRequest"];
+const PROF_FIELDS=["pick","univ","assigned","course","prof","dept","track","cw","vendor","n","nowWeek","round","contact","weekMemo","difficulty","want","good","pShould","pIs","pRequest"];
 const CON_FIELDS=["cName","cAffil","cDate","cMode","cShould","cIs","cGap","c_tk","c_sk","c_tm","c_sm","c_te","c_se","gT","gS","finalPlan","overall","followup"];
 const state={code:"",prof:{f:{},checks:{},weeks:Array(15).fill(false)},con:{f:{},review:{},iv:[]}};
 let sample=null, downloads=null, inClaude=false;
@@ -511,10 +521,10 @@ function render(){
   $$("#ivBody tr").forEach((tr,i)=>{tr.querySelector("td.t").textContent=ivTotal(state.con.iv[i])||"";});
   const sum=AREAS.map(a=>{const v=areaAvg(a.k);return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:150px">${a.k}. ${a.name}</span><span class="bar" style="width:${Math.round(v/5*120)}px"></span><span>${fmt1(v)}</span></div>`;}).join("");
   $("#profSummary").innerHTML=`<div>전체 평균 <b>${fmt1(totalAvg())}</b> / 활용 주차 <b>${weekCount()}주</b>${f.nowWeek?` (현재 ${f.nowWeek}주차)`:""}</div>${sum}<div style="margin-top:6px;color:var(--muted);font-size:12px">${state.code?"접수 코드 "+state.code:"아직 제출 전"}</div>`;
-  $("#consultSummary").innerHTML=`<div><b>${esc(f.course)||"(교과목 미입력)"}</b> · ${esc(f.prof)||""} · ${esc(f.track)||""}</div><div style="color:var(--muted);font-size:12px">${esc(f.cw)||""} ${f.vendor?"("+esc(f.vendor)+")":""} · 활용 ${weekCount()}주${f.nowWeek?"/"+f.nowWeek+"주차":""}</div>${sum}<div style="margin-top:6px"><b>요청 과제</b><div style="white-space:pre-wrap">${esc(f.pRequest)||"(미작성)"}</div></div><div style="margin-top:6px"><b>어려움</b><div style="white-space:pre-wrap">${esc(f.difficulty)||"(미작성)"}</div></div>`;
+  $("#consultSummary").innerHTML=`<div><b>${esc(f.course)||"(교과목 미입력)"}</b> · ${esc(f.univ)||""} ${esc(f.prof)||""} · ${esc(f.track)||""}</div><div style="color:var(--muted);font-size:12px">${esc(f.cw)||""} ${f.vendor?"("+esc(f.vendor)+")":""} · 활용 ${weekCount()}주${f.nowWeek?"/"+f.nowWeek+"주차":""}</div>${sum}<div style="margin-top:6px"><b>요청 과제</b><div style="white-space:pre-wrap">${esc(f.pRequest)||"(미작성)"}</div></div><div style="margin-top:6px"><b>어려움</b><div style="white-space:pre-wrap">${esc(f.difficulty)||"(미작성)"}</div></div>`;
   $("#loadedCodeBadge").textContent=state.code?"코드 "+state.code:"";
   // 미리보기
-  const d={n_fmt:f.n?`${f.n}명`:"",weeks_fmt:`${f.nowWeek?f.nowWeek+"주차 진행":""}${f.nowWeek?" / ":""}활용 ${weekCount()}주`,code:state.code||"",consultant:c.cName?`${c.cName}${c.cAffil?" ("+c.cAffil+")":""}`:"",cdate:[c.cDate?c.cDate.replace(/-/g,". ")+".":"",c.cMode].filter(Boolean).join(" · ")};
+  const d={univ_dept:[f.univ,f.dept].filter(Boolean).join(" "),n_fmt:f.n?`${f.n}명`:"",weeks_fmt:`${f.nowWeek?f.nowWeek+"주차 진행":""}${f.nowWeek?" / ":""}활용 ${weekCount()}주`,code:state.code||"",consultant:c.cName?`${c.cName}${c.cAffil?" ("+c.cAffil+")":""}`:"",cdate:[c.cDate?c.cDate.replace(/-/g,". ")+".":"",c.cMode].filter(Boolean).join(" · ")};
   $$("#paper [data-f]").forEach(el=>{const k=el.dataset.f;el.textContent=(k in d)?d[k]:(f[k]||"");});
   $$("#paper .sec[data-bind]").forEach(el=>{const v=(f[el.dataset.bind]!=null?f[el.dataset.bind]:c[el.dataset.bind])||"";if(el.innerText!==v){el.innerText=v;}el.classList.toggle("empty",!v.trim());});
   $("#pvChecklist").innerHTML=`<table><colgroup><col style="width:7%"><col style="width:48%"><col style="width:9%"><col></colgroup><tr><th>영역</th><th>진단 항목</th><th>점수</th><th>근거·현황</th></tr>`+
@@ -571,7 +581,7 @@ function profContext(){
   collect(); const f=state.prof.f;
   const checks=AREAS.map(a=>`[${a.k}. ${a.name}] 평균 ${fmt1(areaAvg(a.k))}\n`+a.items.map(it=>{const c=state.prof.checks[it.k]||{};return `- ${it.q}: ${c.score?c.score+"점("+SCALE_TXT[c.score]+")":"미응답"}${c.memo?" / 근거: "+c.memo:""}`;}).join("\n")).join("\n");
   const weeks=state.prof.weeks.map((w,i)=>w?(i+1)+"주":null).filter(Boolean).join(", ")||"없음";
-  return `[기본 정보] 교과목 ${f.course||"-"} / 교수 ${f.prof||"-"} / 소속 ${f.dept||"-"} / Track ${f.track||"-"} / 코스웨어 ${f.cw||"-"}(${f.vendor||"-"}) / 수강 ${f.n||"-"}명 / 현재 ${f.nowWeek||"-"}주차 / 컨설팅 ${f.round||"-"}
+  return `[기본 정보] 교과목 ${f.course||"-"} / 교수 ${f.prof||"-"} / 소속 ${[f.univ,f.dept].filter(Boolean).join(" ")||"-"} / 담당 컨설턴트 ${f.assigned||"-"} / Track ${f.track||"-"} / 코스웨어 ${f.cw||"-"}(${f.vendor||"-"}) / 수강 ${f.n||"-"}명 / 현재 ${f.nowWeek||"-"}주차 / 컨설팅 ${f.round||"-"}
 [자가진단 결과] 전체 평균 ${fmt1(totalAvg())}
 ${checks}
 [코스웨어 활용 주차] ${weeks} (총 ${weekCount()}주) / 운영 메모: ${f.weekMemo||"-"}
@@ -652,6 +662,46 @@ ${consultContext()}`),keys);
   finally{b.disabled=false;}
 }
 
+/* ---------- 명단(배정 교과목) ---------- */
+let roster=null;
+function rosterEntries(){const out=[];(roster&&roster.consultants||[]).forEach(c=>c.courses.forEach((co,i)=>out.push(Object.assign({consultant:c.name,ctrack:c.track,key:c.name+"|"+i},co))));return out;}
+function fillPick(){
+  const sel=$("#pick"); const cur=state.prof.f.pick||"";
+  sel.innerHTML=`<option value="">선택(명단에 없으면 직접 입력)</option>`+(roster?roster.consultants.map(c=>`<optgroup label="${esc(c.track)} · 컨설턴트 ${esc(c.name)}">`+c.courses.map((co,i)=>`<option value="${esc(c.name+"|"+i)}">${esc(co.univ)} · ${esc(co.prof)} · ${esc(co.course)}</option>`).join("")+`</optgroup>`).join(""):"");
+  sel.value=cur;
+  const cs=$("#pickConsultant"); cs.innerHTML=`<option value="">컨설턴트 선택(배정 교과목 보기)</option>`+(roster?roster.consultants.map(c=>`<option value="${esc(c.name)}">${esc(c.name)} (${esc(c.affil)}) · ${esc(c.track)}</option>`).join(""):"");
+  if(state.con.f.cName)cs.value=state.con.f.cName;
+}
+function onPick(){
+  const v=$("#pick").value; if(!v)return;
+  const e=rosterEntries().find(x=>x.key===v); if(!e)return;
+  $("#univ").value=e.univ; $("#prof").value=e.prof; $("#course").value=e.course; $("#track").value=e.ctrack; $("#vendor").value=e.vendor; $("#assigned").value=e.consultant;
+  save(); toast("배정 교과목 정보를 채웠습니다. 소속 학과와 코스웨어명을 확인해 주세요");
+}
+async function loadRoster(){
+  try{
+    let data=null;
+    try{const cached=sessionStorage.getItem("softlab-consult-roster");if(cached)data=JSON.parse(cached);}catch(e){}
+    if(!data&&UPLOAD_URL){const r=await fetch(UPLOAD_URL+"?roster=1",{redirect:"follow"});const j=await r.json();if(j.ok&&j.roster){data=j.roster;try{sessionStorage.setItem("softlab-consult-roster",JSON.stringify(data));}catch(e){}}}
+    roster=data; fillPick();
+    if(!roster)$("#pick").innerHTML=`<option value="">명단을 불러오지 못했습니다. 아래 칸에 직접 입력해 주세요</option>`;
+  }catch(e){$("#pick").innerHTML=`<option value="">명단을 불러오지 못했습니다. 아래 칸에 직접 입력해 주세요</option>`;}
+}
+async function myList(){
+  const st=$("#listStatus"), name=$("#pickConsultant").value;
+  if(!name){setStatus(st,"컨설턴트를 선택해 주세요","err");return;}
+  setStatus(st,"현황을 불러오는 중…");
+  try{
+    const r=await fetch(UPLOAD_URL+"?consultant="+encodeURIComponent(name),{redirect:"follow"});
+    const j=await r.json(); if(!j.ok)throw new Error(j.message||"불러오기 실패");
+    if(!$("#cName").value){$("#cName").value=j.consultant.name;$("#cAffil").value=j.consultant.affil;save();}
+    const rows=j.items.map(it=>`<tr><td class="c">${it.no}</td><td>${esc(it.univ)}</td><td>${esc(it.prof)}</td><td>${esc(it.course)}</td><td>${esc(it.vendor)}</td><td class="c">${it.code?(it.hasResult?'<span style="color:var(--consult)">결과 등록</span>':'<span style="color:var(--ok)">자가진단 제출</span>'):'<span style="color:var(--muted)">미제출</span>'}</td><td class="c">${it.code?`<button class="btn small outline" data-code="${esc(it.code)}">${esc(it.code)} 불러오기</button>`:""}</td></tr>`).join("");
+    $("#assignList").innerHTML=`<table class="iv" style="font-size:12px"><thead><tr><th>번호</th><th>대학</th><th>교수</th><th>교과목</th><th>기업</th><th>상태</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+    $$("#assignList [data-code]").forEach(b=>b.addEventListener("click",()=>{$("#loadCode").value=b.dataset.code;loadByCode();}));
+    const done=j.items.filter(i=>i.code).length;
+    setStatus(st,`배정 ${j.items.length}개 교과목 중 ${done}개 자가진단 제출`,"ok");
+  }catch(e){setStatus(st,"불러오기 실패: "+aiError(e),"err");}
+}
 /* ---------- 제출/불러오기 ---------- */
 function blobToBase64(blob){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(",")[1]);r.onerror=rej;r.readAsDataURL(blob);});}
 async function postJson(payload){
@@ -677,9 +727,9 @@ async function submitRequest(){
     setStatus(st,"자가진단 PDF를 만들고 있습니다…");
     const pdf=await buildPdfBlob();
     setStatus(st,"사업단으로 전송하고 있습니다…");
-    const j=await postJson({kind:"consult-request",code:state.code||"",meta:{track:f.track,course:f.course,prof:f.prof,dept:f.dept,cw:f.cw,avg:fmt1(totalAvg())},data:{prof:state.prof},files:[{filename:fileBase("자가진단")+".pdf",mime:"application/pdf",base64:await blobToBase64(pdf)}]});
+    const j=await postJson({kind:"consult-request",code:state.code||"",meta:{track:f.track,course:f.course,prof:f.prof,univ:f.univ,dept:f.dept,cw:f.cw,avg:fmt1(totalAvg())},data:{prof:state.prof},files:[{filename:fileBase("자가진단")+".pdf",mime:"application/pdf",base64:await blobToBase64(pdf)}]});
     state.code=j.code; save(); $("#codeArea").style.display="";$("#codeText").textContent=j.code;$("#loadCode").value=j.code;
-    setStatus(st,`제출 완료. 접수 코드 ${j.code} (「${j.folder}」 폴더에 저장됨)`,"ok"); toast("컨설팅 요청이 제출되었습니다");
+    setStatus(st,`제출 완료. 접수 코드 ${j.code}${j.consultant?" · 담당 컨설턴트 "+j.consultant:""} (「${j.folder}」 폴더에 저장됨)`,"ok"); if(j.consultant){$("#assigned").value=j.consultant;save();} toast("컨설팅 요청이 제출되었습니다");
   }catch(e){setStatus(st,"제출 실패: "+aiError(e),"err");}
   finally{b.disabled=false;}
 }
@@ -712,7 +762,7 @@ async function submitResult(){
     setStatus(st,"결과서 PDF·DOCX를 만들고 있습니다…");
     const [pdf,docx]=await Promise.all([buildPdfBlob(),buildDocxBlob()]);
     setStatus(st,"사업단으로 전송하고 있습니다…");
-    const j=await postJson({kind:"consult-result",code:state.code,meta:{track:f.track,course:f.course,prof:f.prof,dept:f.dept,cw:f.cw,consultant:c.cName,avg:fmt1(totalAvg())},data:{con:state.con},
+    const j=await postJson({kind:"consult-result",code:state.code,meta:{track:f.track,course:f.course,prof:f.prof,univ:f.univ,dept:f.dept,cw:f.cw,consultant:c.cName,avg:fmt1(totalAvg())},data:{con:state.con},
       files:[{filename:fileBase("결과서")+".pdf",mime:"application/pdf",base64:await blobToBase64(pdf)},{filename:fileBase("결과서")+".docx",mime:"application/vnd.openxmlformats-officedocument.wordprocessingml.document",base64:await blobToBase64(docx)}]});
     setStatus(st,`제출 완료: 「${j.folder}」 폴더에 ${j.files.map(x=>x.name).join(", ")} 저장됨`,"ok"); toast("컨설팅 결과가 제출되었습니다");
   }catch(e){setStatus(st,"제출 실패: "+aiError(e),"err");}
@@ -754,7 +804,7 @@ async function buildDocxBlob(){
   const W=9638, pct=p=>Math.round(W*p/100);
   const kv=(k1,v1,k2,v2)=>new D.TableRow({children:[cell(k1,{bold:true,fill:"F4F6F9",w:pct(18)}),cell(v1,{w:pct(32)}),cell(k2,{bold:true,fill:"F4F6F9",w:pct(18)}),cell(v2,{w:pct(32)})]});
   const consultant=c.cName?`${c.cName}${c.cAffil?" ("+c.cAffil+")":""}`:"";
-  const info=T([kv("교과목명",f.course,"담당 교수",f.prof),kv("대학·소속",f.dept,"실증 Track",f.track),kv("AI 코스웨어",f.cw,"공급 기업",f.vendor),kv("수강 인원",f.n?f.n+"명":"","진행 주차 / 활용 주차",`${f.nowWeek?f.nowWeek+"주차 진행 / ":""}활용 ${weekCount()}주`),kv("컨설팅 회차",f.round,"접수 코드",state.code),kv("컨설턴트",consultant,"컨설팅 일자·방식",[c.cDate,c.cMode].filter(Boolean).join(" · "))],[pct(18),pct(32),pct(18),pct(32)]);
+  const info=T([kv("교과목명",f.course,"담당 교수",f.prof),kv("대학·소속",[f.univ,f.dept].filter(Boolean).join(" "),"실증 Track",f.track),kv("AI 코스웨어",f.cw,"공급 기업",f.vendor),kv("수강 인원",f.n?f.n+"명":"","진행 주차 / 활용 주차",`${f.nowWeek?f.nowWeek+"주차 진행 / ":""}활용 ${weekCount()}주`),kv("컨설팅 회차",f.round,"접수 코드",state.code),kv("컨설턴트",consultant,"컨설팅 일자·방식",[c.cDate,c.cMode].filter(Boolean).join(" · "))],[pct(18),pct(32),pct(18),pct(32)]);
   const chkRows=[new D.TableRow({tableHeader:true,children:[cell("영역",{bold:true,fill:"E9EEF7",center:true,w:pct(8)}),cell("진단 항목",{bold:true,fill:"E9EEF7",center:true,w:pct(48)}),cell("점수",{bold:true,fill:"E9EEF7",center:true,w:pct(9)}),cell("근거·현황",{bold:true,fill:"E9EEF7",center:true,w:pct(35)})]})];
   AREAS.forEach(a=>a.items.forEach((it,i)=>{const ch=state.prof.checks[it.k]||{};const cells=[];if(i===0)cells.push(cell(`${a.k}\n${fmt1(areaAvg(a.k))}`,{bold:true,fill:"F4F6F9",center:true,rs:a.items.length,w:pct(8)}));cells.push(cell(it.q,{w:pct(48)}),cell(ch.score||"-",{center:true,w:pct(9)}),cell(ch.memo||"",{w:pct(35)}));chkRows.push(new D.TableRow({children:cells}));}));
   chkRows.push(new D.TableRow({children:[cell("전체 평균",{bold:true,fill:"F4F6F9",center:true,w:pct(56),cs:2}),cell(fmt1(totalAvg()),{center:true,bold:true,w:pct(9)}),cell("5점 척도",{w:pct(35)})]}));
@@ -811,6 +861,9 @@ function bind(){
   $("#btnConsultAI").addEventListener("click",consultAI);
   $("#btnSubmitReq").addEventListener("click",submitRequest);
   $("#btnLoad").addEventListener("click",loadByCode);
+  $("#pick").addEventListener("change",onPick);
+  $("#btnMyList").addEventListener("click",myList);
+  loadRoster();
   $("#loadCode").addEventListener("keydown",e=>{if(e.key==="Enter")loadByCode();});
   $("#btnSubmitRes").addEventListener("click",submitResult);
   $("#btnCopyCode").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(state.code);toast("코드를 복사했습니다");}catch(e){toast("복사가 허용되지 않았습니다");}});
