@@ -535,7 +535,7 @@ function render(){
     AREAS.map(a=>{const p=areaAvg(a.k),r=state.con.review[a.k]||{};const diff=p&&r.score?(r.score-p):null;return `<tr><td>${a.k}. ${a.name}</td><td class="c">${fmt1(p)}</td><td class="c">${r.score||"-"}</td><td class="c" style="${diff!=null&&Math.abs(diff)>=1?"color:var(--danger);font-weight:700":""}">${diff==null?"-":(diff>0?"+":"")+diff.toFixed(1)}</td><td>${esc(r.comment)}</td></tr>`;}).join("")+`</table>`;
   const ivs=state.con.iv.filter(iv=>iv.name.trim());
   $("#pvIv").innerHTML=ivs.length?`<table><colgroup><col style="width:34%"><col><col><col><col><col><col style="width:9%"></colgroup><tr><th>개입안</th><th>수용성</th><th>타당성</th><th>윤리성</th><th>효과성·효율성</th><th>실현가능성</th><th>총점</th></tr>`+ivs.map(iv=>`<tr><td>${esc(iv.name)}</td>${IV_CRIT.map(k=>`<td class="c">${iv[k]||"-"}</td>`).join("")}<td class="c"><b>${ivTotal(iv)||"-"}</b></td></tr>`).join("")+`</table>`:`<div class="sec empty"></div>`;
-  $("#signDate").textContent=new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"});
+  $("#signDate").textContent=(state.signDate?new Date(state.signDate):new Date()).toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"});
 }
 
 /* ---------- AI ---------- */
@@ -787,6 +787,15 @@ async function buildPdfBlob(){
     const clone=$("#paper").cloneNode(true); clone.id="paper-export"; clone.className="paper export";
     clone.querySelectorAll(".sec").forEach(x=>{x.removeAttribute("contenteditable");x.classList.remove("empty");if(!x.innerText.trim())x.innerText="(미작성)";});
     clone.querySelectorAll("h3").forEach(h=>{const body=h.nextElementSibling;const wrap=document.createElement("div");wrap.className="keep";h.parentNode.insertBefore(wrap,h);wrap.appendChild(h);if(body&&(body.classList.contains("sec")||body.id==="pvWeeks"))wrap.appendChild(body);});
+    // 자가진단 점검표를 영역별 표로 나눔: 쪽 경계에서 병합 칸(영역)이 갈라져 칸이 어긋나는 문제 방지
+    const ct=clone.querySelector("#pvChecklist table");
+    if(ct){const cg=ct.querySelector("colgroup");const rows=Array.from(ct.querySelectorAll("tr"));const groups=[];let cur=[rows[0]];
+      rows.slice(1).forEach(tr=>{if(tr.querySelector("td[rowspan]")||tr.querySelector("td[colspan]")){if(cur.length)groups.push(cur);cur=[tr];}else cur.push(tr);});
+      if(cur.length)groups.push(cur);
+      if(groups.length>1&&groups[0].length===1){groups[1].unshift(groups[0][0]);groups.shift();}
+      const box=document.createElement("div");
+      groups.forEach((g,gi)=>{const t=document.createElement("table");if(cg)t.appendChild(cg.cloneNode(true));const tb=document.createElement("tbody");g.forEach(tr=>tb.appendChild(tr));t.appendChild(tb);t.style.margin=gi===groups.length-1?"0 0 14px":"0";if(gi>0)t.style.marginTop="-1px";const w=document.createElement("div");w.className="keep";w.appendChild(t);box.appendChild(w);});
+      ct.replaceWith(box);}
     host=document.createElement("div"); host.style.cssText="position:absolute;left:0;top:0;width:210mm;z-index:-1;opacity:0;pointer-events:none;background:#fff";
     host.appendChild(clone); document.body.appendChild(host); await new Promise(r=>setTimeout(r,50));
     return await html2pdf().set({margin:[15,0,18,0],html2canvas:{scale:2,useCORS:true,letterRendering:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".keep"]}}).from(clone).outputPdf("blob");
