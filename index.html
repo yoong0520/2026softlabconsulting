@@ -535,7 +535,7 @@ function render(){
     AREAS.map(a=>{const p=areaAvg(a.k),r=state.con.review[a.k]||{};const diff=p&&r.score?(r.score-p):null;return `<tr><td>${a.k}. ${a.name}</td><td class="c">${fmt1(p)}</td><td class="c">${r.score||"-"}</td><td class="c" style="${diff!=null&&Math.abs(diff)>=1?"color:var(--danger);font-weight:700":""}">${diff==null?"-":(diff>0?"+":"")+diff.toFixed(1)}</td><td>${esc(r.comment)}</td></tr>`;}).join("")+`</table>`;
   const ivs=state.con.iv.filter(iv=>iv.name.trim());
   $("#pvIv").innerHTML=ivs.length?`<table><colgroup><col style="width:34%"><col><col><col><col><col><col style="width:9%"></colgroup><tr><th>개입안</th><th>수용성</th><th>타당성</th><th>윤리성</th><th>효과성·효율성</th><th>실현가능성</th><th>총점</th></tr>`+ivs.map(iv=>`<tr><td>${esc(iv.name)}</td>${IV_CRIT.map(k=>`<td class="c">${iv[k]||"-"}</td>`).join("")}<td class="c"><b>${ivTotal(iv)||"-"}</b></td></tr>`).join("")+`</table>`:`<div class="sec empty"></div>`;
-  $("#signDate").textContent=(state.signDate?new Date(state.signDate):new Date()).toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"});
+  $("#signDate").textContent=new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric"});
 }
 
 /* ---------- AI ---------- */
@@ -566,10 +566,23 @@ async function askDirect(prompt,opts){
   const j=await res.json();
   return Array.isArray(j.content)?j.content.filter(x=>x.type==="text").map(x=>typeof x.text==="string"?x.text:JSON.stringify(x.text)).join(""):(j.text||"");
 }
-async function askText(prompt,opts){
+async function askTextOnce(prompt,opts){
   if(sample){const r=await sample(prompt,Object.assign({modelTier:"default",cache:false},opts||{}));return r.text;}
   if(aiCfg.proxy||aiCfg.key)return askDirect(prompt,opts);
   throw {code:"no_ai",message:"AI 설정이 필요합니다. 상단의 AI 설정을 확인해 주세요"};
+}
+// AI가 간혹 빈 응답·구조화 객체를 돌려주므로 검증 함수를 통과할 때까지 최대 3회 시도
+async function askText(prompt,opts,check){
+  let lastErr=null;
+  for(let i=0;i<3;i++){
+    try{
+      const t=await askTextOnce(prompt,opts);
+      if(!t||t==="[object Object]")throw new Error("AI 응답이 비어 있습니다");
+      if(check)check(t);
+      return t;
+    }catch(e){lastErr=e;if(e&&(e.code==="no_ai"||e.code==="auth"||e.code==="network"))throw e;await new Promise(r=>setTimeout(r,1500));}
+  }
+  throw lastErr||new Error("AI 응답을 받지 못했습니다. 잠시 후 다시 시도해 주세요");
 }
 const aiError=e=>e&&(e.message||String(e))||"알 수 없는 오류입니다";
 const STYLE=`문체 규칙:
@@ -620,7 +633,7 @@ ${STYLE}
 [[request]]
 
 [교수자 자가진단 자료]
-${profContext()}`),["should","is","request"]);
+${profContext()}`,null,t=>parseSections(t,["should","is","request"])),["should","is","request"]);
     if(out.should)$("#pShould").value=clean(out.should); if(out.is)$("#pIs").value=clean(out.is); if(out.request)$("#pRequest").value=clean(out.request);
     save(); setStatus(st,"초안을 작성했습니다. 내용을 확인하고 자유롭게 고쳐 주세요","ok"); toast("요약 초안이 작성되었습니다");
   }catch(e){setStatus(st,"작성 실패: "+aiError(e),"err");}
@@ -649,7 +662,7 @@ ${STYLE}
 ${keys.map(k=>"[["+k+"]]").join("\n")}
 
 [자료]
-${consultContext()}`),keys);
+${consultContext()}`,null,t=>parseSections(t,keys)),keys);
     const map={should:"cShould",is:"cIs",gap:"cGap",tk:"c_tk",sk:"c_sk",tm:"c_tm",sm:"c_sm",te:"c_te",se:"c_se",gt:"gT",gs:"gS",final:"finalPlan",overall:"overall",followup:"followup"};
     Object.entries(map).forEach(([k,id])=>{if(out[k])$("#"+id).value=(k==="gap"?String(out[k]).replace(/\*\*?/g,"").trim():clean(out[k]));});
     if(out.iv){
@@ -781,25 +794,15 @@ async function saveFile(filename,data,label){
   catch(e){setStatus(st,e&&e.code==="declined"?"저장을 취소했습니다":"저장 실패: "+(e&&e.message||e),e&&e.code==="declined"?"":"err");}
 }
 async function buildPdfBlob(){
-  render(); let host=null; const sx=window.scrollX, sy=window.scrollY;
+  render(); let host=null;
   try{
-    window.scrollTo(0,0); /* 화면을 아래로 내린 상태에서 캡처하면 빈 페이지가 되는 문제 방지 */
     const clone=$("#paper").cloneNode(true); clone.id="paper-export"; clone.className="paper export";
     clone.querySelectorAll(".sec").forEach(x=>{x.removeAttribute("contenteditable");x.classList.remove("empty");if(!x.innerText.trim())x.innerText="(미작성)";});
     clone.querySelectorAll("h3").forEach(h=>{const body=h.nextElementSibling;const wrap=document.createElement("div");wrap.className="keep";h.parentNode.insertBefore(wrap,h);wrap.appendChild(h);if(body&&(body.classList.contains("sec")||body.id==="pvWeeks"))wrap.appendChild(body);});
-    // 자가진단 점검표를 영역별 표로 나눔: 쪽 경계에서 병합 칸(영역)이 갈라져 칸이 어긋나는 문제 방지
-    const ct=clone.querySelector("#pvChecklist table");
-    if(ct){const cg=ct.querySelector("colgroup");const rows=Array.from(ct.querySelectorAll("tr"));const groups=[];let cur=[rows[0]];
-      rows.slice(1).forEach(tr=>{if(tr.querySelector("td[rowspan]")||tr.querySelector("td[colspan]")){if(cur.length)groups.push(cur);cur=[tr];}else cur.push(tr);});
-      if(cur.length)groups.push(cur);
-      if(groups.length>1&&groups[0].length===1){groups[1].unshift(groups[0][0]);groups.shift();}
-      const box=document.createElement("div");
-      groups.forEach((g,gi)=>{const t=document.createElement("table");if(cg)t.appendChild(cg.cloneNode(true));const tb=document.createElement("tbody");g.forEach(tr=>tb.appendChild(tr));t.appendChild(tb);t.style.margin=gi===groups.length-1?"0 0 14px":"0";if(gi>0)t.style.marginTop="-1px";const w=document.createElement("div");w.className="keep";w.appendChild(t);box.appendChild(w);});
-      ct.replaceWith(box);}
     host=document.createElement("div"); host.style.cssText="position:absolute;left:0;top:0;width:210mm;z-index:-1;opacity:0;pointer-events:none;background:#fff";
     host.appendChild(clone); document.body.appendChild(host); await new Promise(r=>setTimeout(r,50));
-    return await html2pdf().set({margin:[15,0,18,0],html2canvas:{scale:2,useCORS:true,letterRendering:true,scrollX:0,scrollY:0},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".keep"]}}).from(clone).outputPdf("blob");
-  }finally{if(host)host.remove(); window.scrollTo(sx,sy);}
+    return await html2pdf().set({margin:[15,0,18,0],html2canvas:{scale:2,useCORS:true,letterRendering:true},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr",".keep"]}}).from(clone).outputPdf("blob");
+  }finally{if(host)host.remove();}
 }
 async function buildDocxBlob(){
   if(!window.docx)throw new Error("문서 라이브러리를 불러오지 못했습니다. 새로 고침 후 다시 시도해 주세요");
